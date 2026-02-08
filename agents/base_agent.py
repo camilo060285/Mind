@@ -1,3 +1,4 @@
+from typing import List, Any, Dict
 from utils.logger import get_logger
 
 class BaseAgent:
@@ -7,16 +8,16 @@ class BaseAgent:
     """
 
     def __init__(self, name: str, description: str):
-        self.name = name
-        self.description = description
-        self.history = []
+        self.name: str = name
+        self.description: str = description
+        self.history: List[str] = []
         self.logger = get_logger(self.name)
 
-    def log(self, entry: str):
+    def log(self, entry: str) -> None:
         """Append an entry to the agent's history and log it."""
         self.history.append(entry)
         self.logger.info(entry)
 
-    def run(self, *args, **kwargs):
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         """Main execution method. Must be implemented by subclasses."""
         raise NotImplementedError("Subclasses must implement run().")
