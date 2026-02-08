@@ -3,6 +3,7 @@ from core.meta_orchestrator import MetaOrchestrator
 from cognition.thinking_protocol import ThinkingProtocol
 from utils.logger import get_logger
 
+
 class MindOrchestrator:
     """
     The unified orchestrator for Mind.

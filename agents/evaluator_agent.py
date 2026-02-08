@@ -1,10 +1,11 @@
 from agents.base_agent import BaseAgent
 
+
 class EvaluatorAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             name="evaluator_agent",
-            description="Evaluates system quality and suggests improvements."
+            description="Evaluates system quality and suggests improvements.",
         )
 
     def run(self, system_output: dict) -> dict:

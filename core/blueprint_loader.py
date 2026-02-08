@@ -1,6 +1,7 @@
 import yaml
 from pathlib import Path
 
+
 class BlueprintLoader:
     """Loads and validates blueprint files."""
 

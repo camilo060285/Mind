@@ -9,9 +9,8 @@ from agents.evaluator_agent import EvaluatorAgent
 from agents.evolution_engine_agent import EvolutionEngineAgent
 from agents.delegator_agent import DelegatorAgent
 
-class MetaOrchestrator:
-    """Runs the meta-agent pipeline defined in a blueprint."""
 
+class MetaOrchestrator:
     def __init__(self):
         self.loader = BlueprintLoader()
         self.agents = {
@@ -28,22 +27,17 @@ class MetaOrchestrator:
 
     def run_blueprint(self, path: str) -> dict:
         blueprint = self.loader.load(path)
-
         goal_text = blueprint["goal"]["raw_text"]
         constraints = blueprint.get("constraints", [])
-
         context = None
 
         for step in blueprint["pipeline"]:
-            agent_name = step["agent"]
-            agent = self.agents[agent_name]
+            agent = self.agents[step["agent"]]
 
-            if agent_name == "goal_interpreter_agent":
+            if step["agent"] == "goal_interpreter_agent":
                 context = agent.run(goal_text)
-
-            elif agent_name == "boundary_setter_agent":
+            elif step["agent"] == "boundary_setter_agent":
                 context = agent.run(context, constraints)
-
             else:
                 context = agent.run(context)
 

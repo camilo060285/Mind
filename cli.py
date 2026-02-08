@@ -1,6 +1,7 @@
 import argparse
 from core.mind_orchestrator import MindOrchestrator
 
+
 def main():
     parser = argparse.ArgumentParser(description="Mind CLI")
 
@@ -15,7 +16,7 @@ def main():
     design_cmd.add_argument("blueprint", help="Path to blueprint YAML")
 
     # mind evolve
-    evolve_cmd = sub.add_parser("evolve", help="Trigger evolution step")
+    sub.add_parser("evolve", help="Trigger evolution step")
 
     args = parser.parse_args()
     mind = MindOrchestrator()
@@ -34,6 +35,7 @@ def main():
 
     else:
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

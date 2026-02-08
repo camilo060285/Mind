@@ -1,10 +1,11 @@
 from agents.base_agent import BaseAgent
 
+
 class SystemDesignerAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             name="system_designer_agent",
-            description="Creates architectural blueprints for new systems."
+            description="Creates architectural blueprints for new systems.",
         )
 
     def run(self, interpreted_goal: dict) -> dict:

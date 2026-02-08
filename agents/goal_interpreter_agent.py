@@ -1,11 +1,12 @@
 import spacy
 from agents.base_agent import BaseAgent
 
+
 class GoalInterpreterAgent(BaseAgent):
     def __init__(self):
         super().__init__(
             name="goal_interpreter_agent",
-            description="Understands Cristian's intentions and converts them into structured goals."
+            description="Understands Cristian's intentions and converts them into structured goals.",
         )
         self.nlp = spacy.load("en_core_web_sm")
 
