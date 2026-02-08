@@ -18,4 +18,4 @@ class SystemDesignerAgent(BaseAgent):
             "complexity": "medium",
         }
         self.log(f"Proposed architecture: {architecture}")
-        return [architecture]
+        return architecture
