@@ -1,0 +1,37 @@
+goal:
+  raw_text: "Help Cristian design a new agentic subsystem for Mind."
+
+constraints:
+  - "Respect privacy and local-first execution."
+  - "Keep complexity manageable."
+  - "Allow future evolution."
+
+pipeline:
+  - agent: goal_interpreter_agent
+    input: goal.raw_text
+
+  - agent: system_designer_agent
+    input_from: previous
+
+  - agent: boundary_setter_agent
+    input_from: previous
+    extra:
+      constraints_ref: constraints
+
+  - agent: tool_selector_agent
+    input_from: previous
+
+  - agent: agent_architect_agent
+    input_from: previous
+
+  - agent: execution_planner_agent
+    input_from: previous
+
+  - agent: evaluator_agent
+    input_from: previous
+
+  - agent: evolution_engine_agent
+    input_from: previous
+
+  - agent: delegator_agent
+    input_from: previous
