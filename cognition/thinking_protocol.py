@@ -1,6 +1,10 @@
 class ThinkingProtocol:
-    """Defines how Mind processes, reasons, and decides."""
+    """Transforms blueprint steps into actionable agent instructions."""
 
-    def think(self, input_data: dict) -> dict:
-        # Placeholder for reasoning logic
-        return {"thought": "placeholder"}
+    def think(self, step: dict) -> dict:
+        # In the future: reasoning, validation, context propagation
+        return {
+            "agent": step.get("agent"),
+            "action": step.get("action"),
+            "context": step.get("context", {}),
+        }
