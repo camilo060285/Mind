@@ -10,21 +10,42 @@ from mind.cli.commands import CommandRegistry, CommandExecutor
 from mind.cli.formatters import MindFormatter
 from mind.cli.history import CommandHistory
 from mind.memory import MemoryManager
+from mind.evolution import (
+    ExperienceLogger,
+    HypothesisGenerator,
+    ExperimentFramework,
+    AdaptationEngine,
+)
 
 
 class InteractiveMindShell:
     """Interactive shell for Mind CLI."""
 
-    def __init__(self, memory_manager: Optional[MemoryManager] = None):
+    def __init__(
+        self,
+        memory_manager: Optional[MemoryManager] = None,
+        experience_logger: Optional[ExperienceLogger] = None,
+    ):
         """Initialize the shell.
 
         Args:
             memory_manager: Optional MemoryManager instance for memory commands
+            experience_logger: Optional ExperienceLogger for evolution commands
         """
         self.registry = CommandRegistry()
         self.executor = CommandExecutor(self.registry)
         self.cmd_history = CommandHistory()
         self.memory_manager = memory_manager or MemoryManager()
+        self.experience_logger = experience_logger or ExperienceLogger()
+
+        # Setup evolution components
+        self.hypothesis_generator = HypothesisGenerator(self.experience_logger)
+        self.experiment_framework = ExperimentFramework()
+        self.adaptation_engine = AdaptationEngine(
+            self.experience_logger,
+            self.hypothesis_generator,
+            self.experiment_framework,
+        )
 
         # Setup prompt toolkit history
         history_file = Path.home() / ".mind_shell_history"
@@ -81,6 +102,54 @@ class InteractiveMindShell:
             )
             self.register_command(
                 "import", mem_handler.handle_import, "Import memories from file"
+            )
+
+        # Evolution commands
+        if self.adaptation_engine:
+            from mind.cli.evolution_commands import EvolutionCommandHandler
+
+            evo_handler = EvolutionCommandHandler(
+                self.experience_logger,
+                self.hypothesis_generator,
+                self.experiment_framework,
+                self.adaptation_engine,
+            )
+            self.register_command(
+                "log_exp", evo_handler.handle_log_experience, "Log a system experience"
+            )
+            self.register_command(
+                "analyze", evo_handler.handle_analyze, "Analyze and generate hypotheses"
+            )
+            self.register_command(
+                "show_hyp",
+                evo_handler.handle_show_hypothesis,
+                "Show hypothesis details",
+            )
+            self.register_command(
+                "list_hyp", evo_handler.handle_list_hypotheses, "List top hypotheses"
+            )
+            self.register_command(
+                "propose_exp",
+                evo_handler.handle_propose_experiment,
+                "Propose experiment",
+            )
+            self.register_command(
+                "record_result",
+                evo_handler.handle_record_result,
+                "Record experiment result",
+            )
+            self.register_command(
+                "adapt_status",
+                evo_handler.handle_adaptation_status,
+                "Show adaptation status",
+            )
+            self.register_command(
+                "evo_stats",
+                evo_handler.handle_evolution_stats,
+                "Show evolution statistics",
+            )
+            self.register_command(
+                "impact", evo_handler.handle_impact_analysis, "Show improvement impact"
             )
 
     def register_command(
