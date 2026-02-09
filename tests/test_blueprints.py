@@ -1,4 +1,4 @@
-from core.blueprint_loader import BlueprintLoader
+from mind.core.blueprint_loader import BlueprintLoader
 
 
 def test_blueprint_loads():

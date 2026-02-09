@@ -1,7 +1,7 @@
-from core.identity import MindIdentity
-from core.meta_orchestrator import MetaOrchestrator
-from cognition.thinking_protocol import ThinkingProtocol
-from utils.logger import get_logger
+from .identity import MindIdentity
+from .meta_orchestrator import MetaOrchestrator
+from ..cognition.thinking_protocol import ThinkingProtocol
+from ..utils.logger import get_logger
 
 
 class MindOrchestrator:

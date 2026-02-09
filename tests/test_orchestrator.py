@@ -1,4 +1,4 @@
-from core.meta_orchestrator import MetaOrchestrator
+from mind.core.meta_orchestrator import MetaOrchestrator
 
 
 def test_meta_pipeline_runs():

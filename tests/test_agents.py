@@ -1,4 +1,4 @@
-from agents.goal_interpreter_agent import GoalInterpreterAgent
+from mind.agents.goal_interpreter_agent import GoalInterpreterAgent
 
 
 def test_goal_interpreter_basic():

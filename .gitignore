@@ -17,3 +17,12 @@ logs/
 # Editor folders
 .vscode/
 .idea/
+# Build and packaging
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Testing
+.pytest_cache/
+.coverage/

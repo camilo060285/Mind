@@ -1,0 +1,35 @@
+[project]
+name = "mind"
+version = "0.1.0"
+description = "A modular, privacy-first agentic meta-system."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Private project — all rights reserved." }
+authors = [
+    { name = "Cristian" }
+]
+
+dependencies = [
+    "pyyaml",
+    "rich",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "black",
+    "mypy",
+    "pre-commit",
+]
+
+[project.scripts]
+mind = "mind.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+

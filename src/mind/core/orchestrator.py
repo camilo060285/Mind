@@ -1,6 +1,6 @@
-from core.identity import MindIdentity
-from cognition.thinking_protocol import ThinkingProtocol
-from agents.echo_agent import EchoAgent
+from .identity import MindIdentity
+from ..cognition.thinking_protocol import ThinkingProtocol
+from ..agents.echo_agent import EchoAgent
 
 
 class Orchestrator:

@@ -1,5 +1,5 @@
 import spacy
-from agents.base_agent import BaseAgent
+from .base_agent import BaseAgent
 
 
 class GoalInterpreterAgent(BaseAgent):
@@ -8,9 +8,25 @@ class GoalInterpreterAgent(BaseAgent):
             name="goal_interpreter_agent",
             description="Understands Cristian's intentions and converts them into structured goals.",
         )
-        self.nlp = spacy.load("en_core_web_sm")
+        self.nlp = None  # Lazy load on first use
+
+    def _ensure_nlp_loaded(self):
+        """Lazy load the spacy model on first use."""
+        if self.nlp is None:
+            try:
+                self.nlp = spacy.load("en_core_web_sm")
+            except OSError:
+                self.logger.warning(
+                    "Spacy model 'en_core_web_sm' not found. "
+                    "Install it with: python -m spacy download en_core_web_sm"
+                )
+                # Fall back to a basic tokenizer with sentencizer
+                self.nlp = spacy.blank("en")
+                if "sentencizer" not in self.nlp.pipe_names:
+                    self.nlp.add_pipe("sentencizer")
 
     def run(self, raw_input: str) -> dict:
+        self._ensure_nlp_loaded()
         doc = self.nlp(raw_input)
 
         # Naive intent: first verb lemma

@@ -1,13 +1,13 @@
-from core.blueprint_loader import BlueprintLoader
-from agents.goal_interpreter_agent import GoalInterpreterAgent
-from agents.system_designer_agent import SystemDesignerAgent
-from agents.boundary_setter_agent import BoundarySetterAgent
-from agents.tool_selector_agent import ToolSelectorAgent
-from agents.agent_architect_agent import AgentArchitectAgent
-from agents.execution_planner_agent import ExecutionPlannerAgent
-from agents.evaluator_agent import EvaluatorAgent
-from agents.evolution_engine_agent import EvolutionEngineAgent
-from agents.delegator_agent import DelegatorAgent
+from .blueprint_loader import BlueprintLoader
+from ..agents.goal_interpreter_agent import GoalInterpreterAgent
+from ..agents.system_designer_agent import SystemDesignerAgent
+from ..agents.boundary_setter_agent import BoundarySetterAgent
+from ..agents.tool_selector_agent import ToolSelectorAgent
+from ..agents.agent_architect_agent import AgentArchitectAgent
+from ..agents.execution_planner_agent import ExecutionPlannerAgent
+from ..agents.evaluator_agent import EvaluatorAgent
+from ..agents.evolution_engine_agent import EvolutionEngineAgent
+from ..agents.delegator_agent import DelegatorAgent
 
 
 class MetaOrchestrator:

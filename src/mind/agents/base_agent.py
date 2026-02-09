@@ -1,5 +1,5 @@
 from typing import List, Any
-from utils.logger import get_logger
+from ..utils.logger import get_logger
 
 
 class BaseAgent:
