@@ -36,11 +36,17 @@ class VectorMemoryStore(BaseMemoryStore):
         self._load_data()
 
         # Try to import sentence transformer for embeddings
-        try:
-            from sentence_transformers import SentenceTransformer
+        # Skip in test environment for speed
+        import os
 
-            self.embedder = SentenceTransformer("all-MiniLM-L6-v2")
-        except ImportError:
+        if os.getenv("SKIP_EMBEDDER", "0") != "1":
+            try:
+                from sentence_transformers import SentenceTransformer
+
+                self.embedder = SentenceTransformer("all-MiniLM-L6-v2")
+            except ImportError:
+                self.embedder = None
+        else:
             self.embedder = None
 
     def _embed_text(self, text: str) -> np.ndarray:

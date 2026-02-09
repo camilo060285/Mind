@@ -58,12 +58,13 @@ def test_rpc_server_socket_listen():
 
         rpc.register_method("mul", mul)
 
-        # start listening on ephemeral port
-        port = rpc.start_listening(host="127.0.0.1", port=0)
+        # start listening on ephemeral port (use framed=False for newline-delimited)
+        port = rpc.start_listening(host="127.0.0.1", port=0, framed=False)
         assert port > 0
 
         # Send a request over TCP and read response
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(2.0)  # 2-second timeout to prevent hanging
         s.connect(("127.0.0.1", port))
         req = {
             "jsonrpc": "2.0",
