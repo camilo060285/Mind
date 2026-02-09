@@ -282,12 +282,30 @@ class RPCServer:
             "methods": method_stats,
         }
 
-    def start_listening(self, host: str = "0.0.0.0", port: int = 0) -> int:
-        """Start a simple TCP listener that accepts JSON-RPC requests line-delimited.
+    def start_listening(
+        self,
+        host: str = "0.0.0.0",
+        port: int = 0,
+        framed: bool = True,
+        use_tls: bool = False,
+        certfile: Optional[str] = None,
+        keyfile: Optional[str] = None,
+    ) -> int:
+        """Start a TCP listener that accepts JSON-RPC requests.
+
+        Supports an optional length-prefixed framed protocol (recommended for
+        production) and optional TLS. When `framed` is True, each message is
+        prefixed by a 4-byte big-endian length. When `framed` is False the
+        server falls back to newline-delimited JSON messages for backwards
+        compatibility.
 
         Args:
             host: Host to bind
             port: Port to bind (0 picks an ephemeral port)
+            framed: Whether to use length-prefixed framing
+            use_tls: Whether to enable TLS (requires certfile/keyfile)
+            certfile: Path to PEM certificate file for server
+            keyfile: Path to PEM private key file for server
 
         Returns:
             The port number the server is listening on
@@ -298,6 +316,9 @@ class RPCServer:
         if self._server_socket is not None:
             raise RuntimeError("Server already listening")
 
+        if use_tls and (certfile is None or keyfile is None):
+            raise ValueError("certfile and keyfile are required when use_tls is True")
+
         srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         srv.bind((host, port))
@@ -305,6 +326,18 @@ class RPCServer:
 
         self._stop_event = threading.Event()
         self._server_socket = srv
+
+        def _recv_n(c, n: int) -> bytes:
+            """Receive exactly n bytes or return partial/empty on EOF."""
+            chunks = []
+            remaining = n
+            while remaining > 0:
+                chunk = c.recv(remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            return b"".join(chunks)
 
         def _accept_loop(sock, stop_event):
             while not stop_event.is_set():
@@ -317,19 +350,52 @@ class RPCServer:
                 # Handle connection in a short-lived thread
                 def _handle_conn(c):
                     with c:
-                        data = b""
-                        try:
-                            # read until newline
-                            while not data.endswith(b"\n"):
-                                chunk = c.recv(4096)
-                                if not chunk:
-                                    break
-                                data += chunk
-                            if not data:
+                        if use_tls:
+                            try:
+                                import ssl
+
+                                ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+                                ctx.load_cert_chain(certfile=certfile, keyfile=keyfile)
+                                c = ctx.wrap_socket(c, server_side=True)
+                            except Exception as e:
+                                logger.error(f"TLS handshake failed: {e}")
                                 return
-                            req_str = data.decode().strip()
+
+                        try:
+                            if framed:
+                                # Read 4-byte length prefix then exact message
+                                header = _recv_n(c, 4)
+                                if len(header) != 4:
+                                    return
+                                msg_len = int.from_bytes(header, byteorder="big")
+                                payload = _recv_n(c, msg_len)
+                                if not payload:
+                                    return
+                                req_str = payload.decode()
+                            else:
+                                # Legacy: newline-delimited JSON
+                                data = b""
+                                while not data.endswith(b"\n"):
+                                    chunk = c.recv(4096)
+                                    if not chunk:
+                                        break
+                                    data += chunk
+                                if not data:
+                                    return
+                                req_str = data.decode().strip()
+
                             resp = self.handle_request(req_str)
-                            c.sendall((resp + "\n").encode())
+
+                            if framed:
+                                resp_bytes = resp.encode()
+                                out = (
+                                    len(resp_bytes).to_bytes(4, byteorder="big")
+                                    + resp_bytes
+                                )
+                                c.sendall(out)
+                            else:
+                                c.sendall((resp + "\n").encode())
+
                         except Exception:
                             try:
                                 c.sendall(
@@ -360,7 +426,9 @@ class RPCServer:
 
         self._listening_thread = t
         bound_port = srv.getsockname()[1]
-        logger.info(f"RPCServer listening on {host}:{bound_port}")
+        logger.info(
+            f"RPCServer listening on {host}:{bound_port} framed={framed} tls={use_tls}"
+        )
         return bound_port
 
     def stop_listening(self) -> None:
