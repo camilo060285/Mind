@@ -141,9 +141,11 @@ class VectorMemoryStore(BaseMemoryStore):
         with open(self.entries_file, "w") as f:
             json.dump(data, f, indent=2, default=str)
 
-        # Save vectors
+        # Save vectors (store as pickled object); cast to Any to satisfy type checkers
         if self._vectors:
-            np.save(self.vectors_file, self._vectors)
+            from typing import cast, Any
+
+            np.save(self.vectors_file, cast(Any, self._vectors), allow_pickle=True)
 
     def store(self, entry: MemoryEntry) -> str:
         """Store a memory entry with embedding.

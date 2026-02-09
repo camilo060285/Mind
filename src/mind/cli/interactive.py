@@ -1,6 +1,7 @@
 """Interactive CLI shell for Mind."""
 
 import sys
+import uuid
 from typing import Optional
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
@@ -15,6 +16,13 @@ from mind.evolution import (
     HypothesisGenerator,
     ExperimentFramework,
     AdaptationEngine,
+)
+from mind.distributed import (
+    AgentNetwork,
+    RPCServer,
+    LoadBalancer,
+    FaultRecovery,
+    StateSync,
 )
 
 
@@ -50,6 +58,14 @@ class InteractiveMindShell:
         # Setup prompt toolkit history
         history_file = Path.home() / ".mind_shell_history"
         self.prompt_history = FileHistory(str(history_file))
+
+        # Setup distributed components
+        agent_id = str(uuid.uuid4())
+        self.agent_network = AgentNetwork()
+        self.rpc_server = RPCServer(agent_id=agent_id)
+        self.load_balancer = LoadBalancer()
+        self.fault_recovery = FaultRecovery()
+        self.state_sync = StateSync(agent_id=agent_id)
 
         self._setup_commands()
 
@@ -152,6 +168,57 @@ class InteractiveMindShell:
                 "impact", evo_handler.handle_impact_analysis, "Show improvement impact"
             )
 
+        # Distributed commands
+        try:
+            from mind.cli.distributed_commands import DistributedCommandHandler
+
+            dist_handler = DistributedCommandHandler(
+                self.agent_network,
+                self.rpc_server,
+                self.load_balancer,
+                self.fault_recovery,
+                self.state_sync,
+            )
+
+            self.register_command(
+                "net_register",
+                dist_handler.handle_net_register,
+                "Register agent in network — usage: net_register <name> <host> <port> [cap1,cap2]",
+            )
+            self.register_command(
+                "net_list",
+                dist_handler.handle_net_list,
+                "List network agents — usage: net_list [capability]",
+            )
+            self.register_command(
+                "rpc_call",
+                dist_handler.handle_rpc_call,
+                "Call RPC method — usage: rpc_call <method> [params_json]",
+            )
+            self.register_command(
+                "lb_assign",
+                dist_handler.handle_lb_assign,
+                "Assign task to agent — usage: lb_assign <task_id> <agent1,agent2,...> [strategy]",
+            )
+            self.register_command(
+                "lb_stats",
+                dist_handler.handle_lb_stats,
+                "Show load balancer stats — usage: lb_stats",
+            )
+            self.register_command(
+                "state_set",
+                dist_handler.handle_state_set,
+                "Set distributed state — usage: state_set <key> <value>",
+            )
+            self.register_command(
+                "state_get",
+                dist_handler.handle_state_get,
+                "Get distributed state — usage: state_get <key>",
+            )
+        except Exception:
+            # If distributed package not available, skip registration
+            pass
+
     def register_command(
         self,
         name: str,
@@ -234,7 +301,7 @@ class InteractiveMindShell:
         MindFormatter.print_header("Welcome to Mind Interactive Shell")
         MindFormatter.print_info("Type 'help' for available commands or 'exit' to quit")
 
-        session = PromptSession(history=self.prompt_history)
+        session: PromptSession = PromptSession(history=self.prompt_history)
 
         while True:
             try:

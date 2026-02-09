@@ -90,6 +90,13 @@ class RPCServer:
         self._load_calls()
         logger.info(f"RPCServer initialized for agent: {agent_id}")
 
+        # Networking (typed as Optional to satisfy static type checks)
+        from typing import Optional as _Opt
+
+        self._server_socket: _Opt[Any] = None
+        self._listening_thread: _Opt[Any] = None
+        self._stop_event: _Opt[Any] = None
+
     def register_method(self, name: str, method: Callable) -> None:
         """Register an RPC method.
 
@@ -274,6 +281,100 @@ class RPCServer:
             "average_execution_time": avg_time,
             "methods": method_stats,
         }
+
+    def start_listening(self, host: str = "0.0.0.0", port: int = 0) -> int:
+        """Start a simple TCP listener that accepts JSON-RPC requests line-delimited.
+
+        Args:
+            host: Host to bind
+            port: Port to bind (0 picks an ephemeral port)
+
+        Returns:
+            The port number the server is listening on
+        """
+        import socket
+        import threading
+
+        if self._server_socket is not None:
+            raise RuntimeError("Server already listening")
+
+        srv = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        srv.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        srv.bind((host, port))
+        srv.listen(5)
+
+        self._stop_event = threading.Event()
+        self._server_socket = srv
+
+        def _accept_loop(sock, stop_event):
+            while not stop_event.is_set():
+                try:
+                    sock.settimeout(0.5)
+                    conn, addr = sock.accept()
+                except Exception:
+                    continue
+
+                # Handle connection in a short-lived thread
+                def _handle_conn(c):
+                    with c:
+                        data = b""
+                        try:
+                            # read until newline
+                            while not data.endswith(b"\n"):
+                                chunk = c.recv(4096)
+                                if not chunk:
+                                    break
+                                data += chunk
+                            if not data:
+                                return
+                            req_str = data.decode().strip()
+                            resp = self.handle_request(req_str)
+                            c.sendall((resp + "\n").encode())
+                        except Exception:
+                            try:
+                                c.sendall(
+                                    (
+                                        json.dumps(
+                                            {
+                                                "jsonrpc": "2.0",
+                                                "error": {
+                                                    "code": -32603,
+                                                    "message": "server error",
+                                                },
+                                                "id": "",
+                                            }
+                                        )
+                                        + "\n"
+                                    ).encode()
+                                )
+                            except Exception:
+                                pass
+
+                t = threading.Thread(target=_handle_conn, args=(conn,))
+                t.daemon = True
+                t.start()
+
+        t = threading.Thread(target=_accept_loop, args=(srv, self._stop_event))
+        t.daemon = True
+        t.start()
+
+        self._listening_thread = t
+        bound_port = srv.getsockname()[1]
+        logger.info(f"RPCServer listening on {host}:{bound_port}")
+        return bound_port
+
+    def stop_listening(self) -> None:
+        """Stop the TCP listener if running."""
+        if self._stop_event is not None:
+            self._stop_event.set()
+        if self._server_socket:
+            try:
+                self._server_socket.close()
+            except Exception:
+                pass
+        self._server_socket = None
+        self._listening_thread = None
+        self._stop_event = None
 
     def clear_history(self) -> None:
         """Clear call history."""
