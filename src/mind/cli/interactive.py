@@ -219,6 +219,36 @@ class InteractiveMindShell:
             # If distributed package not available, skip registration
             pass
 
+        # System Generator commands
+        try:
+            from mind.cli.system_generator_commands import SystemGeneratorCommandHandler
+
+            sys_gen_handler = SystemGeneratorCommandHandler()
+
+            self.register_command(
+                "create_system",
+                sys_gen_handler.handle_create_system,
+                "Create autonomous system — usage: create_system <name>|<goal>|<features>|<tools>",
+            )
+            self.register_command(
+                "list_systems",
+                sys_gen_handler.handle_list_systems,
+                "List generated systems — usage: list_systems",
+            )
+            self.register_command(
+                "system_info",
+                sys_gen_handler.handle_system_info,
+                "Get system info — usage: system_info <system_id>",
+            )
+            self.register_command(
+                "show_blueprint",
+                sys_gen_handler.handle_show_blueprint,
+                "Show system blueprint — usage: show_blueprint <system_id>",
+            )
+        except Exception:
+            # If system generator not available, skip registration
+            pass
+
     def register_command(
         self,
         name: str,
