@@ -255,7 +255,14 @@ def learn(youtube_url: str, save: bool):
 
         try:
             from mind.learning import YouTubeTextLearner
+        except ImportError:
+            click.secho(
+                "YouTube learning module not available. Install youtube-transcript-api",
+                fg="yellow",
+            )
+            return
 
+        try:
             learner = YouTubeTextLearner()
             knowledge = learner.learn_from_url(youtube_url)
 
@@ -272,11 +279,8 @@ def learn(youtube_url: str, save: bool):
             if save:
                 click.secho("✓ Saved to knowledge base", fg="green")
 
-        except ImportError:
-            click.secho(
-                "YouTube learning module not available. Install youtube-transcript-api",
-                fg="yellow",
-            )
+        except Exception as e:
+            click.secho(f"✗ Error during learning: {e}", fg="red", err=True)
 
     except Exception as e:
         click.secho(f"✗ Error: {e}", fg="red", err=True)
