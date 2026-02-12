@@ -12,6 +12,8 @@ authors = [
 dependencies = [
     "pyyaml",
     "rich",
+    "click",
+    "youtube-transcript-api",
 ]
 
 [project.optional-dependencies]
