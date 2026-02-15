@@ -139,77 +139,132 @@ Be brief but valuable.""",
 
         prompt = prompts.get(format, prompts["comprehensive"])
 
-        # Adjust token limits based on format
+        # Adjust token limits based on format and model
         token_limits = {
             "quick": 200,
-            "summary": 350,
-            "tutorial": 500,
-            "comprehensive": 600,
+            "summary": 300,  # Reduced from 350
+            "tutorial": 400,  # Reduced from 500
+            "comprehensive": 450,  # Reduced from 600
         }
-        n_predict = token_limits.get(format, 350)
+        n_predict = token_limits.get(format, 300)
+
+        # Qwen is slower - reduce tokens further for better completion
+        if model == "qwen":
+            n_predict = int(n_predict * 0.8)  # 20% fewer tokens for qwen
 
         # Adjust timeout based on format and model
         timeout_settings = {
-            "quick": 90,
-            "summary": 120,
-            "tutorial": 180,
-            "comprehensive": 240,
+            "quick": 120,  # Increased from 90
+            "summary": 180,  # Increased from 120
+            "tutorial": 300,  # Increased from 180
+            "comprehensive": 480,  # Increased from 240 (8 minutes)
         }
-        base_timeout = timeout_settings.get(format, 120)
-        # Qwen model needs more time
-        timeout = base_timeout * 1.5 if model == "qwen" else base_timeout
+        base_timeout = timeout_settings.get(format, 180)
+        # Qwen model needs significantly more time
+        timeout = base_timeout * 2 if model == "qwen" else base_timeout
+
+        # Warn about comprehensive + qwen combo
+        if format == "comprehensive" and model == "qwen":
+            click.echo()
+            click.secho(
+                "⚠️  Note: Comprehensive learning with qwen is very slow (5-10 minutes)",
+                fg="yellow",
+            )
+            click.secho(
+                "   Consider using --format tutorial instead, or --model phi for faster results",
+                fg="yellow",
+            )
+            click.echo()
 
         # Mind learns the topic
         click.echo(f"📚 Learning about '{topic}' ({format} format)...")
         time_estimates = {
-            "quick": "5-15 seconds",
-            "summary": "15-30 seconds",
-            "tutorial": "30-60 seconds",
-            "comprehensive": "60-120 seconds",
+            "quick": ("15-45 seconds", "5-15 seconds"),  # (qwen, phi)
+            "summary": ("45-90 seconds", "20-40 seconds"),
+            "tutorial": ("2-5 minutes", "40-80 seconds"),
+            "comprehensive": ("5-10 minutes", "2-4 minutes"),
         }
-        expected_time = time_estimates.get(format, "10-30 seconds")
-        click.echo(f"   Expected time: {expected_time} ({model} model)...")
-        click.echo("   Processing", nl=False)
+        qwen_time, phi_time = time_estimates.get(
+            format, ("30-60 seconds", "15-30 seconds")
+        )
+        expected_time = qwen_time if model == "qwen" else phi_time
+        click.echo(f"   Expected time: {expected_time}")
+        click.echo(f"   Timeout limit: {int(timeout)} seconds")
+        click.echo()
+        click.echo("   Processing (this may take a while)", nl=False)
 
         try:
             # Generate with retry logic
-            max_retries = 2
+            max_retries = 3  # Increased from 2
             current_timeout = int(timeout)
+            current_tokens = n_predict
             for attempt in range(max_retries):
                 try:
                     click.echo(".", nl=False)
                     knowledge = mind_llm.generate(
-                        prompt, n_predict=n_predict, timeout=current_timeout
+                        prompt, n_predict=current_tokens, timeout=current_timeout
                     )
-                    click.echo(" ✓")
+                    click.echo(" ✓\n")
                     break
                 except Exception as e:
                     if "timed out" in str(e).lower() and attempt < max_retries - 1:
                         click.echo(
-                            f"\n   ⚠️  Timeout on attempt {attempt + 1}, retrying with shorter response..."
+                            f"\n   ⚠️  Timeout on attempt {attempt + 1}/{max_retries}"
                         )
-                        n_predict = int(n_predict * 0.7)  # Reduce tokens by 30%
+                        click.echo(
+                            f"      Reducing tokens: {current_tokens} → ", nl=False
+                        )
+                        current_tokens = int(
+                            current_tokens * 0.6
+                        )  # More aggressive: 40% reduction
+                        click.echo(f"{current_tokens}")
+                        click.echo(
+                            f"      Increasing timeout: {current_timeout}s → ", nl=False
+                        )
                         current_timeout = int(
-                            current_timeout * 1.3
-                        )  # Increase timeout by 30%
+                            current_timeout * 1.5
+                        )  # More aggressive: 50% increase
+                        click.echo(f"{current_timeout}s")
+                        click.echo("   Retrying", nl=False)
                         continue
                     else:
                         raise
         except Exception as e:
-            click.echo(" ✗")
+            click.echo(" ✗\n")
             if "timed out" in str(e).lower():
-                click.echo()
                 click.secho(
-                    "⚠️  Learning took too long. Try these solutions:", fg="yellow"
+                    "❌ Learning timed out after multiple attempts", fg="red", bold=True
                 )
-                click.echo("   1. Use --format quick for faster learning")
-                click.echo("   2. Use --model phi for faster processing")
-                click.echo("   3. Break down into smaller topics")
                 click.echo()
+                click.secho("💡 Solutions:", fg="yellow", bold=True)
+
+                if format == "comprehensive":
+                    click.echo(
+                        "   • comprehensive format is very demanding - try tutorial instead:"
+                    )
+                    click.secho(
+                        f"     mind learn topic '{topic}' --format tutorial --model {model}",
+                        fg="cyan",
+                    )
+
+                if model == "qwen":
+                    click.echo("   • qwen model is slower - try phi instead:")
+                    click.secho(
+                        f"     mind learn topic '{topic}' --format {format} --model phi",
+                        fg="cyan",
+                    )
+
+                click.echo("   • Use quicker formats:")
                 click.secho(
-                    f"Example: mind learn topic '{topic}' --format quick --model phi",
-                    fg="cyan",
+                    f"     mind learn topic '{topic}' --format quick", fg="cyan"
                 )
+                click.secho(
+                    f"     mind learn topic '{topic}' --format summary", fg="cyan"
+                )
+
+                click.echo("   • Break into smaller topics:")
+                click.echo(f"     Instead of '{topic}', try more specific subtopics")
+                click.echo()
             raise
 
         click.echo()
