@@ -17,6 +17,7 @@ from datetime import datetime
 
 # Import Mind components
 from mind.cognition import get_default_llm, init_llm
+from mind.config.settings import Settings
 from mind.agents import ComicPipelineOrchestrator
 from mind.cli.learn_commands import learn
 from mind.cli.newscast_commands import newscast
@@ -161,12 +162,16 @@ def analyze(file_path: str, query: str, format: str, save: bool):
     try:
         click.secho(f"[Reading file: {file_path}]", fg="cyan")
 
-        with open(file_path, "r") as f:
-            content = f.read()
+        max_chars = Settings.ANALYZE_MAX_CHARS
+        with open(file_path, "r", errors="ignore") as f:
+            content = f.read(max_chars + 1)
 
         # Limit size for safety
-        if len(content) > 50000:
-            content = content[:50000] + "\n[... file truncated (50KB limit) ...]"
+        if len(content) > max_chars:
+            content = (
+                content[:max_chars]
+                + f"\n[... file truncated ({max_chars} char limit) ...]"
+            )
 
         click.secho("[Analyzing...]", fg="cyan")
 
@@ -273,7 +278,7 @@ def history():
     """Show recent Mind commands and results"""
 
     try:
-        history_file = Path.home() / ".mind" / "history.json"
+        history_file = Settings.HISTORY_FILE
 
         if not history_file.exists():
             click.secho("No history yet", fg="yellow")
@@ -502,10 +507,10 @@ def _save_to_history(command_type: str, input_text: str, output: str) -> None:
     """Save command to history file"""
 
     try:
-        history_dir = Path.home() / ".mind"
+        history_dir = Settings.HISTORY_DIR
         history_dir.mkdir(exist_ok=True)
 
-        history_file = history_dir / "history.json"
+        history_file = Settings.HISTORY_FILE
 
         history = []
         if history_file.exists():
@@ -521,8 +526,8 @@ def _save_to_history(command_type: str, input_text: str, output: str) -> None:
 
         history.append(entry)
 
-        # Keep last 100 entries
-        history = history[-100:]
+        # Keep last N entries
+        history = history[-Settings.HISTORY_LIMIT :]
 
         with open(history_file, "w") as f:
             json.dump(history, f, indent=2)
