@@ -1,4 +1,4 @@
-"""CLI commands for NewscastStudio character management."""
+"""CLI commands for NewscastStudio character and broadcast management."""
 
 import click
 from pathlib import Path
@@ -8,6 +8,8 @@ from mind.agents.newscast_studio.character_manager import (
     CharacterAssetManager,
     create_default_newscast_characters,
 )
+from mind.agents.newscast_studio.broadcast_pipeline import NewscastBroadcastPipeline
+from mind.cognition import get_default_llm
 
 
 @click.group()
@@ -307,6 +309,151 @@ def import_character(input_path):
 
     except Exception as e:
         click.secho(f"❌ Error importing character: {e}", fg="red", err=True)
+        raise click.Abort()
+
+
+@newscast.group()
+def broadcast():
+    """Manage NewscastStudio broadcasts."""
+    pass
+
+
+@broadcast.command(name="create")
+@click.argument("topic")
+@click.option("--context", default="", help="Market context for broadcast")
+@click.option("--duration", default=60, type=int, help="Duration in seconds")
+@click.option("--tone", default="professional", help="Broadcast tone")
+@click.option("--verbose", is_flag=True, help="Show detailed output")
+def create_broadcast(topic, context, duration, tone, verbose):
+    """Create a new market news broadcast.
+
+    Examples:
+        mind newscast broadcast create "Apple stock surge"
+        mind newscast broadcast create "Tesla earnings" --context "Q4 results" --duration 90
+        mind newscast broadcast create "Market crash" --tone "urgent" --verbose
+    """
+    try:
+        if verbose:
+            click.secho("[Initializing broadcast pipeline...]", fg="cyan")
+            click.secho(f"Topic: {topic}", fg="cyan")
+            click.secho(f"Duration: {duration}s", fg="cyan")
+            click.secho(f"Tone: {tone}", fg="cyan")
+            click.echo()
+
+        llm = get_default_llm()
+        pipeline = NewscastBroadcastPipeline(llm)
+
+        if verbose:
+            click.secho("[Creating broadcast...]", fg="yellow")
+
+        result = pipeline.create_broadcast(
+            topic=topic,
+            context=context,
+            duration=duration,
+            tone=tone,
+        )
+
+        if result["status"] == "success":
+            click.secho("✅ BROADCAST CREATED", fg="green", bold=True)
+            click.echo()
+            click.echo(f"ID: {result['broadcast_id']}")
+            click.echo(f"Path: {result['broadcast_path']}")
+            click.echo()
+            click.secho(
+                "💡 View with: mind newscast broadcast show " + result["broadcast_id"],
+                fg="cyan",
+            )
+        else:
+            click.secho(f"❌ Error: {result.get('error')}", fg="red")
+
+    except Exception as e:
+        click.secho(f"❌ Error creating broadcast: {e}", fg="red", err=True)
+        raise click.Abort()
+
+
+@broadcast.command(name="list")
+@click.option("--limit", default=10, type=int, help="Number of broadcasts to show")
+def list_broadcasts(limit):
+    """List recent broadcasts."""
+    try:
+        llm = get_default_llm()
+        pipeline = NewscastBroadcastPipeline(llm)
+
+        broadcasts = pipeline.list_broadcasts()[:limit]
+
+        if not broadcasts:
+            click.secho("📚 No broadcasts created yet.", fg="yellow")
+            return
+
+        click.echo("=" * 60)
+        click.secho("RECENT BROADCASTS", fg="cyan", bold=True)
+        click.echo("=" * 60)
+        click.echo()
+
+        table_data = []
+        for bc in broadcasts:
+            table_data.append(
+                [
+                    bc["title"][:30],
+                    bc["id"][:12],
+                    bc["created_at"].split("T")[0],
+                    bc["status"],
+                ]
+            )
+
+        headers = ["Title", "ID", "Date", "Status"]
+        click.echo(tabulate(table_data, headers=headers, tablefmt="simple"))
+        click.echo()
+        click.secho(f"Total: {len(broadcasts)} broadcasts", fg="cyan", bold=True)
+
+    except Exception as e:
+        click.secho(f"❌ Error listing broadcasts: {e}", fg="red", err=True)
+        raise click.Abort()
+
+
+@broadcast.command(name="show")
+@click.argument("broadcast_id")
+@click.option("--section", default="all", help="Section to show (all, analysis, script)")
+def show_broadcast(broadcast_id, section):
+    """Show broadcast details.
+
+    Examples:
+        mind newscast broadcast show broadcast_20260215_120000_apple_stock
+        mind newscast broadcast show <id> --section script
+    """
+    try:
+        llm = get_default_llm()
+        pipeline = NewscastBroadcastPipeline(llm)
+
+        broadcast = pipeline.get_broadcast(broadcast_id)
+
+        if not broadcast:
+            click.secho(f"❌ Broadcast not found: {broadcast_id}", fg="red")
+            return
+
+        click.echo("=" * 60)
+        click.secho(f"BROADCAST: {broadcast['title']}", fg="cyan", bold=True)
+        click.echo("=" * 60)
+        click.echo()
+        click.echo(f"ID:       {broadcast['id']}")
+        click.echo(f"Status:   {broadcast['status']}")
+        click.echo(f"Duration: {broadcast['duration_seconds']}s")
+        click.echo(f"Created:  {broadcast['created_at']}")
+        click.echo()
+
+        if section in ["all", "analysis"]:
+            click.secho("📊 ANALYSIS:", fg="yellow", bold=True)
+            click.echo(broadcast["analysis"][:500])
+            click.echo()
+
+        if section in ["all", "script"]:
+            click.secho("📝 SCRIPT:", fg="yellow", bold=True)
+            click.echo(broadcast["script"][:500])
+            if len(broadcast["script"]) > 500:
+                click.echo("[... truncated ...]")
+
+    except Exception as e:
+        click.secho(f"❌ Error showing broadcast: {e}", fg="red", err=True)
         raise click.Abort()
 
 
