@@ -148,19 +148,39 @@ Be brief but valuable.""",
         }
         n_predict = token_limits.get(format, 350)
 
+        # Adjust timeout based on format and model
+        timeout_settings = {
+            "quick": 90,
+            "summary": 120,
+            "tutorial": 180,
+            "comprehensive": 240,
+        }
+        base_timeout = timeout_settings.get(format, 120)
+        # Qwen model needs more time
+        timeout = base_timeout * 1.5 if model == "qwen" else base_timeout
+
         # Mind learns the topic
         click.echo(f"📚 Learning about '{topic}' ({format} format)...")
-        expected_time = "5-10 seconds" if format == "quick" else "10-30 seconds"
-        click.echo(f"   Expected time: {expected_time}...")
+        time_estimates = {
+            "quick": "5-15 seconds",
+            "summary": "15-30 seconds",
+            "tutorial": "30-60 seconds",
+            "comprehensive": "60-120 seconds",
+        }
+        expected_time = time_estimates.get(format, "10-30 seconds")
+        click.echo(f"   Expected time: {expected_time} ({model} model)...")
         click.echo("   Processing", nl=False)
 
         try:
             # Generate with retry logic
             max_retries = 2
+            current_timeout = int(timeout)
             for attempt in range(max_retries):
                 try:
                     click.echo(".", nl=False)
-                    knowledge = mind_llm.generate(prompt, n_predict=n_predict)
+                    knowledge = mind_llm.generate(
+                        prompt, n_predict=n_predict, timeout=current_timeout
+                    )
                     click.echo(" ✓")
                     break
                 except Exception as e:
@@ -169,6 +189,9 @@ Be brief but valuable.""",
                             f"\n   ⚠️  Timeout on attempt {attempt + 1}, retrying with shorter response..."
                         )
                         n_predict = int(n_predict * 0.7)  # Reduce tokens by 30%
+                        current_timeout = int(
+                            current_timeout * 1.3
+                        )  # Increase timeout by 30%
                         continue
                     else:
                         raise

@@ -80,12 +80,13 @@ class LlamaCppProvider(LLMProvider):
                 f"Available models: {list(self.model_map.keys())}"
             )
 
-    def _run_llama(self, prompt: str, n_predict: int = 200) -> str:
+    def _run_llama(self, prompt: str, n_predict: int = 200, timeout: int = 120) -> str:
         """Run llama-completion with given prompt.
 
         Args:
             prompt: Input prompt
             n_predict: Max tokens to generate
+            timeout: Timeout in seconds (default: 120)
 
         Returns:
             Generated output
@@ -116,7 +117,7 @@ class LlamaCppProvider(LLMProvider):
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=timeout,
             )
 
             if proc.returncode != 0:
@@ -126,18 +127,21 @@ class LlamaCppProvider(LLMProvider):
         except subprocess.TimeoutExpired:
             raise RuntimeError("llama-completion timed out")
 
-    def generate(self, prompt: str, n_predict: int = 200, **kwargs) -> str:
+    def generate(
+        self, prompt: str, n_predict: int = 200, timeout: int = 120, **kwargs
+    ) -> str:
         """Generate text from a prompt.
 
         Args:
             prompt: Input prompt
             n_predict: Max tokens to generate
+            timeout: Timeout in seconds (default: 120)
             **kwargs: Unused (for compatibility)
 
         Returns:
             Generated text
         """
-        return self._run_llama(prompt, n_predict=n_predict)
+        return self._run_llama(prompt, n_predict=n_predict, timeout=timeout)
 
     def parse_task(self, description: str) -> Dict[str, Any]:
         """Parse natural language task into structured format.
