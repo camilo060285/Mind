@@ -61,20 +61,27 @@ def learn_youtube(youtube_url: str, save: bool):
 @click.option(
     "--format",
     type=click.Choice(["tutorial", "summary", "comprehensive", "quick"]),
-    default="comprehensive",
+    default="summary",
     help="Learning format/depth",
 )
 @click.option(
     "--examples/--no-examples", default=True, help="Include practical examples"
 )
 @click.option("--save/--no-save", default=True, help="Save learned knowledge to memory")
-def learn_topic(topic, format, examples, save):
+@click.option(
+    "--model",
+    type=click.Choice(["phi", "qwen"]),
+    default="phi",
+    help="Model to use (phi=faster, qwen=deeper)",
+)
+def learn_topic(topic, format, examples, save, model):
     """Learn about a specific topic.
 
     Examples:
         mind learn topic "machine learning basics"
         mind learn topic "cryptography" --format tutorial
         mind learn topic "neural networks" --format quick --no-examples
+        mind learn topic "deep learning" --format comprehensive --model qwen
     """
     click.echo("=" * 60)
     click.echo(f"🎓 LEARNING: {topic}")
@@ -82,9 +89,9 @@ def learn_topic(topic, format, examples, save):
     click.echo()
 
     try:
-        # Initialize Mind with Qwen (better for learning)
-        click.echo("🧠 Initializing Mind cognitive system...")
-        mind = init_llm(model="qwen")
+        # Initialize Mind
+        click.echo(f"🧠 Initializing Mind cognitive system (model: {model})...")
+        mind_llm = init_llm(model=model)
         click.echo("✓ Mind ready\n")
 
         # Create learning prompt based on format
@@ -132,13 +139,57 @@ Be brief but valuable.""",
 
         prompt = prompts.get(format, prompts["comprehensive"])
 
+        # Adjust token limits based on format
+        token_limits = {
+            "quick": 200,
+            "summary": 350,
+            "tutorial": 500,
+            "comprehensive": 600,
+        }
+        n_predict = token_limits.get(format, 350)
+
         # Mind learns the topic
         click.echo(f"📚 Learning about '{topic}' ({format} format)...")
-        click.echo("   This may take 10-30 seconds...\n")
+        expected_time = "5-10 seconds" if format == "quick" else "10-30 seconds"
+        click.echo(f"   Expected time: {expected_time}...")
+        click.echo("   Processing", nl=False)
 
-        knowledge = mind.generate(
-            prompt, n_predict=800 if format == "comprehensive" else 400
-        )
+        try:
+            # Generate with retry logic
+            max_retries = 2
+            for attempt in range(max_retries):
+                try:
+                    click.echo(".", nl=False)
+                    knowledge = mind_llm.generate(prompt, n_predict=n_predict)
+                    click.echo(" ✓")
+                    break
+                except Exception as e:
+                    if "timed out" in str(e).lower() and attempt < max_retries - 1:
+                        click.echo(
+                            f"\n   ⚠️  Timeout on attempt {attempt + 1}, retrying with shorter response..."
+                        )
+                        n_predict = int(n_predict * 0.7)  # Reduce tokens by 30%
+                        continue
+                    else:
+                        raise
+        except Exception as e:
+            click.echo(" ✗")
+            if "timed out" in str(e).lower():
+                click.echo()
+                click.secho(
+                    "⚠️  Learning took too long. Try these solutions:", fg="yellow"
+                )
+                click.echo("   1. Use --format quick for faster learning")
+                click.echo("   2. Use --model phi for faster processing")
+                click.echo("   3. Break down into smaller topics")
+                click.echo()
+                click.secho(
+                    f"Example: mind learn topic '{topic}' --format quick --model phi",
+                    fg="cyan",
+                )
+            raise
+
+        click.echo()
 
         click.echo("=" * 60)
         click.echo("LEARNED KNOWLEDGE")
