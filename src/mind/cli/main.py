@@ -18,6 +18,7 @@ from datetime import datetime
 # Import Mind components
 from mind.cognition import get_default_llm, init_llm
 from mind.agents import ComicPipelineOrchestrator
+from mind.cli.learn_commands import learn
 
 
 @click.group(invoke_without_command=True)
@@ -239,49 +240,8 @@ Be concise and practical."""
         sys.exit(1)
 
 
-@mind_cli.command()
-@click.argument("youtube_url")
-@click.option("--save", is_flag=True, help="Save to knowledge base")
-def learn(youtube_url: str, save: bool):
-    """Learn from a YouTube video (transcript extraction)
-
-    Examples:
-
-      mind learn "https://youtube.com/watch?v=..."
-
-      mind learn "https://youtube.com/watch?v=..." --save
-    """
-    try:
-        click.secho("[Fetching transcript...]", fg="cyan")
-
-        try:
-            from mind.learning import YouTubeTextLearner
-
-            learner = YouTubeTextLearner()
-            knowledge = learner.learn_from_url(youtube_url)
-
-            click.secho("✓ Learned from video", fg="green")
-
-            if "summary" in knowledge:
-                click.secho("\nSummary:", fg="yellow", bold=True)
-                click.echo(knowledge.get("summary", ""))
-
-            if "concepts" in knowledge:
-                click.secho("\nKey Concepts:", fg="yellow", bold=True)
-                click.echo(knowledge.get("concepts", ""))
-
-            if save:
-                click.secho("✓ Saved to knowledge base", fg="green")
-
-        except ImportError:
-            click.secho(
-                "YouTube learning module not available. Install youtube-transcript-api",
-                fg="yellow",
-            )
-
-    except Exception as e:
-        click.secho(f"✗ Error: {e}", fg="red", err=True)
-        sys.exit(1)
+# Add learn command group
+mind_cli.add_command(learn)
 
 
 @mind_cli.command()
