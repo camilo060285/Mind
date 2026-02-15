@@ -19,6 +19,7 @@ from datetime import datetime
 from mind.cognition import get_default_llm, init_llm
 from mind.agents import ComicPipelineOrchestrator
 from mind.cli.learn_commands import learn
+from mind.cli.newscast_commands import newscast
 
 
 @click.group(invoke_without_command=True)
@@ -242,6 +243,9 @@ Be concise and practical."""
 
 # Add learn command group
 mind_cli.add_command(learn)
+
+# Add newscast command group
+mind_cli.add_command(newscast)
 
 
 @mind_cli.command()
