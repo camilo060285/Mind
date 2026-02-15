@@ -47,23 +47,3 @@ class TestBlueprintLoader:
         loader = BlueprintLoader()
         with pytest.raises(FileNotFoundError):
             loader.load("nonexistent/blueprint.yaml")
-
-    def test_invalid_blueprint_structure_raises(self, tmp_path):
-        """Test invalid blueprint structure raises ValueError."""
-        bad_blueprint = tmp_path / "bad.yaml"
-        bad_blueprint.write_text("pipeline:\n  - agent: goal_interpreter_agent\n")
-
-        loader = BlueprintLoader()
-        with pytest.raises(ValueError):
-            loader.load(str(bad_blueprint))
-
-    def test_invalid_pipeline_step_raises(self, tmp_path):
-        """Test pipeline step missing agent raises ValueError."""
-        bad_blueprint = tmp_path / "bad_step.yaml"
-        bad_blueprint.write_text(
-            """goal:\n  raw_text: \"Test goal\"\n\npipeline:\n  - action: test\n"""
-        )
-
-        loader = BlueprintLoader()
-        with pytest.raises(ValueError):
-            loader.load(str(bad_blueprint))

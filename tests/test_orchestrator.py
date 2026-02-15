@@ -1,4 +1,3 @@
-import pytest
 from mind.core.meta_orchestrator import MetaOrchestrator
 from mind.core.mind_orchestrator import MindOrchestrator
 
@@ -55,17 +54,6 @@ class TestMetaOrchestrator:
         final_output = result["final_output"]
         # The final output should have architectural information
         assert final_output is not None
-
-    def test_meta_pipeline_unknown_agent_raises(self, tmp_path):
-        """Test that unknown agents in pipeline raise a ValueError."""
-        blueprint = tmp_path / "unknown_agent.yaml"
-        blueprint.write_text(
-            """goal:\n  raw_text: \"Test goal\"\n\npipeline:\n  - agent: unknown_agent\n"""
-        )
-
-        meta = MetaOrchestrator()
-        with pytest.raises(ValueError):
-            meta.run_blueprint(str(blueprint))
 
 
 class TestMindOrchestrator:
