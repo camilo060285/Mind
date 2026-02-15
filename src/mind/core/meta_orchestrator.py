@@ -32,11 +32,14 @@ class MetaOrchestrator:
         context = None
 
         for step in blueprint["pipeline"]:
-            agent = self.agents[step["agent"]]
+            agent_name = step["agent"]
+            if agent_name not in self.agents:
+                raise ValueError(f"Unknown agent in pipeline: {agent_name}")
+            agent = self.agents[agent_name]
 
-            if step["agent"] == "goal_interpreter_agent":
+            if agent_name == "goal_interpreter_agent":
                 context = agent.run(goal_text)
-            elif step["agent"] == "boundary_setter_agent":
+            elif agent_name == "boundary_setter_agent":
                 context = agent.run(context, constraints)
             else:
                 context = agent.run(context)
