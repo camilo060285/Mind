@@ -16,6 +16,7 @@ repos:
       - id: mypy
         additional_dependencies:
            - types-PyYAML
+           - types-tabulate
         args:
            - --config-file=setup.cfg
 
