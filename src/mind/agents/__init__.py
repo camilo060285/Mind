@@ -1,23 +1,10 @@
 """Mind Agents Module - Specialized agents for autonomous tasks"""
 
-from .specialized_agent_factory import (
-    SpecializedAgent,
-    ComicStudioAgent,
-    MarketAnalystAgent,
-    StoryWriterAgent,
-    ConceptDesignAgent,
-    QualityCheckAgent,
-    SpecializedAgentFactory,
-)
-from .comic_orchestrator import ComicPipelineOrchestrator
+# Comic Studio agents have been extracted to ~/2d_animation_studio
+# This module now only contains Mind's meta-system agents
+
+from .base_agent import BaseAgent
 
 __all__ = [
-    "SpecializedAgent",
-    "ComicStudioAgent",
-    "MarketAnalystAgent",
-    "StoryWriterAgent",
-    "ConceptDesignAgent",
-    "QualityCheckAgent",
-    "SpecializedAgentFactory",
-    "ComicPipelineOrchestrator",
+    "BaseAgent",
 ]
