@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mind://schemas/latent_core.schema.json",
+  "title": "Mind Latent Core Schema v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "domain",
+    "intent",
+    "entities",
+    "constraints",
+    "structure",
+    "style",
+    "confidence",
+    "source"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^1\\.0$"
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["goal", "outcome", "audience"],
+      "properties": {
+        "goal": { "type": "string", "minLength": 1 },
+        "outcome": { "type": "string", "minLength": 1 },
+        "audience": { "type": "string", "minLength": 1 }
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "type", "salience"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "salience": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value", "priority"],
+        "properties": {
+          "kind": { "type": "string", "minLength": 1 },
+          "value": { "type": "string", "minLength": 1 },
+          "priority": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "structure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["form", "sections"],
+      "properties": {
+        "form": { "type": "string", "minLength": 1 },
+        "sections": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tone", "voice", "length_hint"],
+      "properties": {
+        "tone": { "type": "string", "minLength": 1 },
+        "voice": { "type": "string", "minLength": 1 },
+        "length_hint": { "type": "string", "minLength": 1 }
+      }
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["raw_input", "timestamp", "encoder"],
+      "properties": {
+        "raw_input": { "type": "string" },
+        "timestamp": { "type": "string", "minLength": 1 },
+        "encoder": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
