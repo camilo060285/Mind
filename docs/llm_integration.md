@@ -20,6 +20,13 @@ The Mind framework now supports **LLM integration** for intelligent agent orches
 
 Both run locally on your Raspberry Pi using **llama.cpp** with zero cloud costs.
 
+## Supported Providers
+
+- `llama_cpp` (local GGUF models)
+- `ollama` (local/remote Ollama endpoint)
+- `openai` (OpenAI-compatible chat completions)
+- `anthropic` (Anthropic Messages API)
+
 ## Installation & Setup
 
 ### Prerequisites
@@ -111,6 +118,30 @@ export MIND_MODELS_DIR=/custom/path/models
 
 # Then run your app
 python your_app.py
+```
+
+### Cloud/API provider configuration
+
+```bash
+# OpenAI-compatible
+export MIND_LLM_PROVIDER=openai
+export MIND_LLM_MODEL=gpt-4o-mini
+export MIND_OPENAI_API_KEY=<your_key>
+# optional
+export MIND_OPENAI_BASE_URL=https://api.openai.com/v1
+
+# Anthropic
+export MIND_LLM_PROVIDER=anthropic
+export MIND_LLM_MODEL=claude-3-5-sonnet-latest
+export MIND_ANTHROPIC_API_KEY=<your_key>
+# optional
+export MIND_ANTHROPIC_BASE_URL=https://api.anthropic.com
+
+# Ollama
+export MIND_LLM_PROVIDER=ollama
+export MIND_LLM_MODEL=qwen2.5:7b-instruct
+# optional
+export MIND_OLLAMA_BASE_URL=http://localhost:11434
 ```
 
 ## Integration with Agents
@@ -252,3 +283,12 @@ To add a new LLM provider:
 2. Implement `LLMProvider` interface
 3. Update `src/mind/cognition/llm_config.py` factory
 4. Add tests and docs
+
+## Model Selection Benchmark
+
+Use the benchmark matrix before choosing a final production model:
+
+- Guide: [LLM Selection Matrix](./LLM_SELECTION_MATRIX.md)
+- Cases: `benchmarks/animation_studio_cases.json`
+- Rubric: `benchmarks/scoring_rubric.json`
+- Runner: `scripts/benchmark_llm_matrix.py`

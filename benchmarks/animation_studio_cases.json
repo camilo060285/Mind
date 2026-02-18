@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "description": "Evaluation cases for animation studio + Mind latent pipeline.",
+  "cases": [
+    {
+      "id": "encoder_ryxen_identity",
+      "task_type": "encoder",
+      "domain": "animation",
+      "prompt": "Convert this into strict latent JSON: Create Ryxen as a reusable digital actor with consistent silhouette, neon cyan/magenta palette, sarcastic robot-demon personality, and a 4-panel story workflow.",
+      "expects_json": true,
+      "required_keywords": ["schema_version", "intent", "constraints", "style", "confidence"]
+    },
+    {
+      "id": "script_episode_opening",
+      "task_type": "script",
+      "domain": "animation",
+      "prompt": "Write a short 4-panel satirical script about Ryxen reacting to a wild market spike. Keep character voice sarcastic but lovable.",
+      "expects_json": false,
+      "required_keywords": ["Panel 1", "Panel 2", "Panel 3", "Panel 4", "Ryxen"]
+    },
+    {
+      "id": "shot_prompt_pack",
+      "task_type": "prompt_pack",
+      "domain": "animation",
+      "prompt": "Generate 6 image prompts for Ryxen with consistent identity: 2 close-ups, 2 full-body, 2 dynamic poses. Include one shared negative prompt for all.",
+      "expects_json": false,
+      "required_keywords": ["close-up", "full-body", "dynamic", "negative prompt", "Ryxen"]
+    },
+    {
+      "id": "production_plan",
+      "task_type": "planning",
+      "domain": "animation",
+      "prompt": "Create a weekly semi-autonomous production plan for an animation studio that must run while the user is at work. Include approvals, quality gates, and budget caps.",
+      "expects_json": false,
+      "required_keywords": ["quality gate", "approval", "budget", "schedule", "automation"]
+    }
+  ]
+}

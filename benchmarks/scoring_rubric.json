@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "weights": {
+    "schema_adherence": 0.25,
+    "instruction_following": 0.2,
+    "character_consistency": 0.2,
+    "script_quality": 0.15,
+    "latency": 0.1,
+    "cost": 0.1
+  },
+  "scales": {
+    "schema_adherence": "0-10",
+    "instruction_following": "0-10",
+    "character_consistency": "0-10",
+    "script_quality": "0-10",
+    "latency": "0-10 (higher is faster)",
+    "cost": "0-10 (higher is cheaper)"
+  },
+  "notes": [
+    "Automated runner computes baseline signals for schema_adherence/instruction_following/latency.",
+    "Character consistency and script quality should include a short human review score.",
+    "Final score = weighted sum of normalized criteria."
+  ]
+}

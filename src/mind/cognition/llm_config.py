@@ -4,6 +4,9 @@ import os
 from typing import Optional
 from pathlib import Path
 from .providers.llama_cpp_provider import LlamaCppProvider
+from .providers.openai_provider import OpenAIProvider
+from .providers.anthropic_provider import AnthropicProvider
+from .providers.ollama_provider import OllamaProvider
 from .llm_interface import LLMProvider
 
 
@@ -12,6 +15,11 @@ LLM_PROVIDER = os.getenv("MIND_LLM_PROVIDER", "llama_cpp")
 LLM_MODEL = os.getenv("MIND_LLM_MODEL", "phi")  # "phi" or "qwen"
 LLAMA_BIN = os.getenv("MIND_LLAMA_BIN", None)
 MODELS_DIR = os.getenv("MIND_MODELS_DIR", None)
+OPENAI_API_KEY = os.getenv("MIND_OPENAI_API_KEY", None)
+OPENAI_BASE_URL = os.getenv("MIND_OPENAI_BASE_URL", "https://api.openai.com/v1")
+ANTHROPIC_API_KEY = os.getenv("MIND_ANTHROPIC_API_KEY", None)
+ANTHROPIC_BASE_URL = os.getenv("MIND_ANTHROPIC_BASE_URL", "https://api.anthropic.com")
+OLLAMA_BASE_URL = os.getenv("MIND_OLLAMA_BASE_URL", "http://localhost:11434")
 
 
 def get_llm_provider(
@@ -21,8 +29,9 @@ def get_llm_provider(
     """Get LLM provider instance based on configuration.
 
     Args:
-        provider: Provider name ("llama_cpp", etc.). Falls back to env var.
-        model: Model name ("phi", "qwen"). Falls back to env var.
+        provider: Provider name ("llama_cpp", "openai", "anthropic", "ollama").
+            Falls back to env var.
+        model: Model name. Falls back to env var.
 
     Returns:
         Configured LLM provider
@@ -43,6 +52,32 @@ def get_llm_provider(
             models_dir = Path(MODELS_DIR)
 
         return LlamaCppProvider(model=model, llama_bin=llama_bin, models_dir=models_dir)
+
+    if provider == "openai":
+        if not OPENAI_API_KEY:
+            raise ValueError("MIND_OPENAI_API_KEY is required for provider 'openai'")
+        return OpenAIProvider(
+            api_key=OPENAI_API_KEY,
+            model=model,
+            base_url=OPENAI_BASE_URL,
+        )
+
+    if provider == "anthropic":
+        if not ANTHROPIC_API_KEY:
+            raise ValueError(
+                "MIND_ANTHROPIC_API_KEY is required for provider 'anthropic'"
+            )
+        return AnthropicProvider(
+            api_key=ANTHROPIC_API_KEY,
+            model=model,
+            base_url=ANTHROPIC_BASE_URL,
+        )
+
+    if provider == "ollama":
+        return OllamaProvider(
+            model=model,
+            base_url=OLLAMA_BASE_URL,
+        )
 
     raise ValueError(f"Unknown LLM provider: {provider}")
 

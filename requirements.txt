@@ -36,6 +36,7 @@ pytest==9.0.2
 python-dotenv==1.2.1
 PyYAML==6.0.3
 requests==2.32.5
+types-requests==2.32.4.20250913
 rich==14.3.2
 ruff==0.15.0
 setuptools==81.0.0
