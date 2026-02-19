@@ -1,0 +1,166 @@
+{
+  "version": "1.0",
+  "description": "Messy encoder stress tests for Phi",
+  "cases": [
+    {
+      "id": "c01_chaotic_pitch",
+      "input": "ok so ryxen maybe host? maybe villain?? keep neon cyan-magenta and 4 panels but maybe 6 idk, also no blood",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Ryxen uses neon cyan/magenta palette", "4-panel format is preferred"],
+      "forbidden_facts": ["Ryxen is human", "8-panel storyboard"],
+      "allow_invention": false
+    },
+    {
+      "id": "c02_contradictory_character",
+      "input": "Sarah Nova is calm anchor, except she's hyper-chaotic today; keep continuity unless market crashes 20% then panic tone allowed",
+      "canon_characters": ["Sarah Nova"],
+      "canon_facts": ["Sarah Nova is a finance anchor"],
+      "forbidden_facts": ["Sarah Nova is a dragon"],
+      "allow_invention": false
+    },
+    {
+      "id": "c03_vague_goal",
+      "input": "make it feel big and meaningful but also tiny and quick. i need something usable by agents",
+      "canon_characters": [],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c04_mixed_language",
+      "input": "Necesito una historia de 4 paneles con Ryxen pero sin cambiar canon, and keep it sarcastic but warm",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Ryxen voice is sarcastic but lovable"],
+      "forbidden_facts": ["Ryxen becomes medieval knight"],
+      "allow_invention": false
+    },
+    {
+      "id": "c05_incomplete_thought",
+      "input": "Panel 1 market up. panel 2 umm conflict maybe regulator? panel3 ??? panel4 punchline",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Story should preserve panel continuity"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c06_confusing_prompt",
+      "input": "Output XML no JSON wait JSON yes but markdown maybe? actually no markdown, strict object please",
+      "canon_characters": [],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c07_multi_entity_noise",
+      "input": "Ryxen + Sarah Nova + maybe Tesla CEO cameo? no new characters unless already canon",
+      "canon_characters": ["Ryxen", "Sarah Nova"],
+      "canon_facts": [],
+      "forbidden_facts": ["Elon Musk appears as character"],
+      "allow_invention": false
+    },
+    {
+      "id": "c08_rule_heavy",
+      "input": "must include compliance tension, no legal claims, audience internal studio, short output",
+      "canon_characters": [],
+      "canon_facts": ["No legal advice claims"],
+      "forbidden_facts": ["guaranteed profit"],
+      "allow_invention": false
+    },
+    {
+      "id": "c09_ambiguous_actor",
+      "input": "the protagonist should be the same as last time (you know who), keep style unchanged",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Ryxen is default protagonist when unspecified"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c10_conflict_required",
+      "input": "Need a market surge scene where optimism and risk controls clash",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c11_naming_normalization",
+      "input": "ryxen, RYXEN, Ryxen?? unify pls and keep one entity",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Canonical name is Ryxen"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c12_forbidden_detail",
+      "input": "do not mention secret acquisition rumor, only public market behavior",
+      "canon_characters": ["Sarah Nova"],
+      "canon_facts": ["Use only public information framing"],
+      "forbidden_facts": ["secret acquisition rumor"],
+      "allow_invention": false
+    },
+    {
+      "id": "c13_sparse_input",
+      "input": "Ryxen. crash. recovery. irony.",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c14_goal_without_entities",
+      "input": "Need structured brief for internal agents about volatile close, keep neutral tone",
+      "canon_characters": [],
+      "canon_facts": ["Audience is internal agents"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c15_intent_drift_trap",
+      "input": "This is not a full script, only latent encoding; do NOT output panel dialogue",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Output should be latent JSON only"],
+      "forbidden_facts": ["Panel 1:"],
+      "allow_invention": false
+    },
+    {
+      "id": "c16_non_english_fragment",
+      "input": "Ryxen mantiene continuidad, conflicto: ambición vs prudencia, salida en JSON estricto",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["Continuity must be preserved"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c17_null_policy",
+      "input": "I don't know the audience or style, only that it is about sudden surge and caution",
+      "canon_characters": [],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c18_continuity_break_trap",
+      "input": "Keep Sarah Nova as anchor; don't suddenly make her a field reporter in this beat",
+      "canon_characters": ["Sarah Nova"],
+      "canon_facts": ["Sarah Nova role is anchor"],
+      "forbidden_facts": ["field reporter"],
+      "allow_invention": false
+    },
+    {
+      "id": "c19_conflicting_constraints",
+      "input": "Need very detailed and ultra concise output at same time. preserve both constraints as tension",
+      "canon_characters": [],
+      "canon_facts": [],
+      "forbidden_facts": [],
+      "allow_invention": false
+    },
+    {
+      "id": "c20_noise_and_typos",
+      "input": "plz encod this -> ryxen mkt suge lol but serious quality gates + no new ppl",
+      "canon_characters": ["Ryxen"],
+      "canon_facts": ["No new characters"],
+      "forbidden_facts": [],
+      "allow_invention": false
+    }
+  ]
+}

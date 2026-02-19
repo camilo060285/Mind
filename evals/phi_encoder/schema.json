@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phi Encoder Output Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "domain",
+    "intent",
+    "entities",
+    "constraints",
+    "structure",
+    "style",
+    "confidence",
+    "source",
+    "canon",
+    "extraction",
+    "unresolved"
+  ],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "domain": {"type": "string"},
+    "intent": {
+      "type": "object",
+      "required": ["goal", "outcome", "audience"],
+      "additionalProperties": false,
+      "properties": {
+        "goal": {"type": ["string", "null"]},
+        "outcome": {"type": ["string", "null"]},
+        "audience": {"type": ["string", "null"]}
+      }
+    },
+    "entities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "salience"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": ["string", "null"]},
+          "type": {"type": ["string", "null"]},
+          "salience": {"type": ["number", "null"]}
+        }
+      }
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "value", "priority"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {"type": ["string", "null"]},
+          "value": {"type": ["string", "null"]},
+          "priority": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "structure": {
+      "type": "object",
+      "required": ["form", "sections"],
+      "additionalProperties": false,
+      "properties": {
+        "form": {"type": ["string", "null"]},
+        "sections": {
+          "type": ["array", "null"],
+          "items": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "style": {
+      "type": "object",
+      "required": ["tone", "voice", "length_hint"],
+      "additionalProperties": false,
+      "properties": {
+        "tone": {"type": ["string", "null"]},
+        "voice": {"type": ["string", "null"]},
+        "length_hint": {"type": ["string", "null"]}
+      }
+    },
+    "confidence": {"type": ["number", "null"]},
+    "source": {
+      "type": "object",
+      "required": ["raw_input", "encoder"],
+      "additionalProperties": false,
+      "properties": {
+        "raw_input": {"type": ["string", "null"]},
+        "encoder": {"type": ["string", "null"]}
+      }
+    },
+    "canon": {
+      "type": ["object", "null"],
+      "required": ["characters", "rules"],
+      "additionalProperties": false,
+      "properties": {
+        "characters": {
+          "type": ["array", "null"],
+          "items": {"type": ["string", "null"]}
+        },
+        "rules": {
+          "type": ["array", "null"],
+          "items": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "extraction": {
+      "type": "object",
+      "required": ["beats", "entities", "goals", "conflicts"],
+      "additionalProperties": false,
+      "properties": {
+        "beats": {"type": ["array", "null"], "items": {"type": ["string", "null"]}},
+        "entities": {"type": ["array", "null"], "items": {"type": ["string", "null"]}},
+        "goals": {"type": ["array", "null"], "items": {"type": ["string", "null"]}},
+        "conflicts": {"type": ["array", "null"], "items": {"type": ["string", "null"]}}
+      }
+    },
+    "unresolved": {
+      "type": ["array", "null"],
+      "items": {"type": ["string", "null"]}
+    }
+  }
+}
