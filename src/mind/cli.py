@@ -7,6 +7,22 @@ from rich.table import Table
 
 from mind.core.mind_orchestrator import MindOrchestrator
 
+
+def load_env():
+    """Load .env file if it exists (Mind + studio unified config)."""
+    env_path = Path.cwd() / ".env"
+    if not env_path.exists():
+        env_path = Path.home() / "mind" / ".env"
+
+    if env_path.exists():
+        with open(env_path) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
+                    os.environ.setdefault(key.strip(), value.strip())
+
+
 # Get the blueprints directory relative to this module
 BLUEPRINTS_DIR = Path(__file__).parent / "blueprints"
 
@@ -51,6 +67,9 @@ def mind_info():
 
 
 def main():
+    """Main CLI entry point."""
+    load_env()  # Load .env configuration first
+
     parser = argparse.ArgumentParser(description="Mind CLI")
     sub = parser.add_subparsers(dest="command")
 

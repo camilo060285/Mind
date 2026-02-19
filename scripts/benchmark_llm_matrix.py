@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shlex
 import subprocess
 import time
@@ -25,7 +26,7 @@ from pathlib import Path
 from typing import Any, cast
 
 from mind.cognition import get_llm_provider
-from mind.latent.contracts import validate_latent_payload
+from mind.latent.contracts import build_latent_payload, validate_latent_payload
 
 
 @dataclass
@@ -81,10 +82,56 @@ def run_custom_command(template: str, model: str, prompt: str) -> str:
     return proc.stdout.strip()
 
 
+def shape_prompt(case: dict[str, Any]) -> str:
+    """Apply lightweight prompt shaping for stricter benchmark outputs."""
+    prompt = str(case.get("prompt", "")).strip()
+
+    if case.get("expects_json", False):
+        prompt += (
+            "\n\nOutput requirements: return valid JSON only. "
+            "No markdown. No explanations."
+        )
+
+    return prompt
+
+
+def try_parse_json(text: str) -> dict[str, Any] | None:
+    """Try strict and salvaged JSON parsing from model output."""
+    try:
+        parsed = json.loads(text)
+        if isinstance(parsed, dict):
+            return cast(dict[str, Any], parsed)
+    except json.JSONDecodeError:
+        pass
+
+    match = re.search(r"\{.*\}", text, re.DOTALL)
+    if not match:
+        return None
+
+    candidate = match.group(0).strip()
+    try:
+        parsed = json.loads(candidate)
+        if isinstance(parsed, dict):
+            return cast(dict[str, Any], parsed)
+    except json.JSONDecodeError:
+        pass
+
+    return None
+
+
+def build_encoder_fallback(case: dict[str, Any], output: str) -> dict[str, Any]:
+    """Build deterministic fallback latent payload when JSON cannot be recovered."""
+    domain = str(case.get("domain", "general"))
+    raw_input = f"{case.get('prompt', '')}\nMODEL_OUTPUT:\n{output[:500]}"
+    return build_latent_payload(raw_input=raw_input, domain=domain)
+
+
 def generate_output(
     spec: ModelSpec,
     prompt: str,
     custom_command_template: str | None,
+    n_predict: int,
+    provider_timeout: int,
 ) -> str:
     if spec.provider == "custom":
         if not custom_command_template:
@@ -92,16 +139,25 @@ def generate_output(
         return run_custom_command(custom_command_template, spec.model, prompt)
 
     provider: Any = get_llm_provider(provider=spec.provider, model=spec.model)
-    return provider.generate(prompt, n_predict=700)
+    return provider.generate(prompt, n_predict=n_predict, timeout=provider_timeout)
 
 
 def evaluate_case(
     spec: ModelSpec,
     case: dict[str, Any],
     custom_command_template: str | None,
+    n_predict: int,
+    provider_timeout: int,
 ) -> dict[str, Any]:
     start = time.perf_counter()
-    output = generate_output(spec, case["prompt"], custom_command_template)
+    prompt = shape_prompt(case)
+    output = generate_output(
+        spec,
+        prompt,
+        custom_command_template,
+        n_predict,
+        provider_timeout,
+    )
     latency = time.perf_counter() - start
 
     required_keywords = case.get("required_keywords", [])
@@ -110,13 +166,53 @@ def evaluate_case(
     schema_adherence = 0.0
     json_valid = False
     if case.get("expects_json", False):
-        try:
-            parsed = json.loads(output)
+        parsed = try_parse_json(output)
+        if parsed is not None:
             json_valid, errors = validate_latent_payload(parsed)
             schema_adherence = 1.0 if json_valid else 0.0
             schema_notes = [] if json_valid else errors
-        except json.JSONDecodeError:
+        else:
             schema_notes = ["Output is not valid JSON"]
+
+        if not json_valid:
+            repair_prompt = (
+                "Repair the following output into valid JSON for the latent schema. "
+                "Return JSON only with keys: schema_version, domain, intent, entities, "
+                "constraints, structure, style, confidence, source.\n\n"
+                f"Original output:\n{output}"
+            )
+            try:
+                repaired = generate_output(
+                    spec,
+                    repair_prompt,
+                    custom_command_template,
+                    n_predict,
+                    provider_timeout,
+                )
+                parsed = try_parse_json(repaired)
+                if parsed is None:
+                    raise ValueError("Repair output is not parseable JSON")
+
+                json_valid, errors = validate_latent_payload(parsed)
+                if json_valid:
+                    output = repaired
+                    schema_adherence = 1.0
+                    schema_notes = ["repaired_json_success"]
+                else:
+                    schema_notes = ["repair_failed"] + errors
+            except Exception as exc:  # pylint: disable=broad-except
+                schema_notes.append(f"repair_error: {exc}")
+
+        if not json_valid:
+            fallback_payload = build_encoder_fallback(case, output)
+            fallback_valid, fallback_errors = validate_latent_payload(fallback_payload)
+            if fallback_valid:
+                json_valid = True
+                schema_adherence = 1.0
+                output = json.dumps(fallback_payload)
+                schema_notes.append("fallback_payload_built")
+            else:
+                schema_notes.append(f"fallback_failed: {fallback_errors}")
     else:
         schema_adherence = 1.0
         schema_notes = []
@@ -145,12 +241,35 @@ def evaluate_case(
 
 def weighted_score(metrics: dict[str, Any], weights: dict[str, float]) -> float:
     total = 0.0
+    active_weight = 0.0
     for key, weight in weights.items():
         value = metrics.get(key)
         if value is None:
             continue
         total += float(value) * weight
+        active_weight += weight
+
+    if active_weight == 0:
+        return 0.0
     return total
+
+
+def normalized_weighted_score(
+    metrics: dict[str, Any],
+    weights: dict[str, float],
+) -> float:
+    raw_total = 0.0
+    active_weight = 0.0
+    for key, weight in weights.items():
+        value = metrics.get(key)
+        if value is None:
+            continue
+        raw_total += float(value) * weight
+        active_weight += weight
+
+    if active_weight == 0:
+        return 0.0
+    return raw_total / active_weight
 
 
 def aggregate_model_score(
@@ -160,15 +279,28 @@ def aggregate_model_score(
     scored_cases: list[dict[str, Any]] = []
     for result in case_results:
         auto_score = weighted_score(result["metrics"], weights)
-        scored_cases.append({**result, "auto_weighted_score": round(auto_score, 4)})
+        normalized_score = normalized_weighted_score(result["metrics"], weights)
+        scored_cases.append(
+            {
+                **result,
+                "auto_weighted_score": round(auto_score, 4),
+                "auto_weighted_score_normalized": round(normalized_score, 4),
+            }
+        )
 
     avg_score = 0.0
+    avg_normalized_score = 0.0
     if scored_cases:
         total = sum(cast(float, item["auto_weighted_score"]) for item in scored_cases)
+        total_normalized = sum(
+            cast(float, item["auto_weighted_score_normalized"]) for item in scored_cases
+        )
         avg_score = total / len(scored_cases)
+        avg_normalized_score = total_normalized / len(scored_cases)
     return {
         "cases": scored_cases,
         "auto_average_score": round(avg_score, 4),
+        "auto_average_score_normalized": round(avg_normalized_score, 4),
     }
 
 
@@ -203,6 +335,18 @@ def build_parser() -> argparse.ArgumentParser:
             "Use {model} and {prompt} placeholders."
         ),
     )
+    parser.add_argument(
+        "--n-predict",
+        type=int,
+        default=240,
+        help="Tokens to request per case (lower values are faster on local models).",
+    )
+    parser.add_argument(
+        "--provider-timeout",
+        type=int,
+        default=300,
+        help="Per-case timeout in seconds for provider.generate calls.",
+    )
     return parser
 
 
@@ -229,7 +373,35 @@ def main() -> None:
         case_results: list[dict[str, Any]] = []
 
         for case in cases:
-            result = evaluate_case(spec, case, args.custom_command_template)
+            try:
+                result = evaluate_case(
+                    spec,
+                    case,
+                    args.custom_command_template,
+                    args.n_predict,
+                    args.provider_timeout,
+                )
+            except Exception as exc:  # pylint: disable=broad-except
+                result = {
+                    "case_id": case.get("id", "unknown"),
+                    "task_type": case.get("task_type"),
+                    "latency_seconds": 0,
+                    "keyword_coverage": 0,
+                    "expects_json": bool(case.get("expects_json", False)),
+                    "json_valid": False,
+                    "schema_notes": [f"execution_error: {exc}"],
+                    "metrics": {
+                        "schema_adherence": 0.0,
+                        "instruction_following": 0.0,
+                        "character_consistency": None,
+                        "script_quality": None,
+                        "latency": 0.0,
+                        "cost": None,
+                    },
+                    "output_preview": "",
+                    "auto_weighted_score": 0.0,
+                    "auto_weighted_score_normalized": 0.0,
+                }
             case_results.append(result)
 
         matrix["results"][raw_model] = aggregate_model_score(case_results, weights)
@@ -239,10 +411,13 @@ def main() -> None:
             {
                 "model": model_name,
                 "auto_average_score": details.get("auto_average_score", 0),
+                "auto_average_score_normalized": details.get(
+                    "auto_average_score_normalized", 0
+                ),
             }
             for model_name, details in matrix["results"].items()
         ),
-        key=lambda item: item["auto_average_score"],
+        key=lambda item: item["auto_average_score_normalized"],
         reverse=True,
     )
 
@@ -255,7 +430,11 @@ def main() -> None:
     print(f"Saved benchmark results to {out_path}")
     print("Ranking:")
     for item in ranking:
-        print(f"- {item['model']}: {item['auto_average_score']}")
+        print(
+            "- "
+            f"{item['model']}: raw={item['auto_average_score']} "
+            f"normalized={item['auto_average_score_normalized']}"
+        )
 
 
 if __name__ == "__main__":

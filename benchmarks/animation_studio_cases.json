@@ -6,7 +6,7 @@
       "id": "encoder_ryxen_identity",
       "task_type": "encoder",
       "domain": "animation",
-      "prompt": "Convert this into strict latent JSON: Create Ryxen as a reusable digital actor with consistent silhouette, neon cyan/magenta palette, sarcastic robot-demon personality, and a 4-panel story workflow.",
+      "prompt": "Convert the following brief into strict latent JSON. Return ONLY valid JSON with these exact top-level keys: schema_version, domain, intent, entities, constraints, structure, style, confidence, source. Use schema_version=\"1.0\" and domain=\"animation\". No markdown, no explanations, no code fences.\n\nExample of valid output format:\n{\"schema_version\": \"1.0\", \"domain\": \"animation\", \"intent\": {\"goal\": \"Create a character asset\", \"outcome\": \"Reusable character\", \"audience\": \"studio\"}, \"entities\": [{\"name\": \"character_name\", \"role\": \"protagonist\"}], \"constraints\": [{\"type\": \"visual\", \"value\": \"consistent color palette\"}], \"structure\": {\"form\": \"character design\", \"sections\": [\"identity\", \"personality\", \"visual\"]}, \"style\": {\"tone\": \"defined\", \"voice\": \"character-specific\", \"length_hint\": \"concise\"}, \"confidence\": 0.8, \"source\": {\"raw_input\": \"user brief\", \"method\": \"structured parsing\"}}\n\nNow encode this brief:\nCreate Ryxen as a reusable digital actor with consistent silhouette, neon cyan/magenta palette, sarcastic robot-demon personality, and a 4-panel story workflow.",
       "expects_json": true,
       "required_keywords": ["schema_version", "intent", "constraints", "style", "confidence"]
     },
@@ -14,7 +14,7 @@
       "id": "script_episode_opening",
       "task_type": "script",
       "domain": "animation",
-      "prompt": "Write a short 4-panel satirical script about Ryxen reacting to a wild market spike. Keep character voice sarcastic but lovable.",
+      "prompt": "Write a short 4-panel satirical script about Ryxen reacting to a wild market spike. Keep character voice sarcastic but lovable. Output format must be exactly: Panel 1: ..., Panel 2: ..., Panel 3: ..., Panel 4: .... Include Ryxen by name in at least 2 panels.",
       "expects_json": false,
       "required_keywords": ["Panel 1", "Panel 2", "Panel 3", "Panel 4", "Ryxen"]
     },
@@ -22,7 +22,7 @@
       "id": "shot_prompt_pack",
       "task_type": "prompt_pack",
       "domain": "animation",
-      "prompt": "Generate 6 image prompts for Ryxen with consistent identity: 2 close-ups, 2 full-body, 2 dynamic poses. Include one shared negative prompt for all.",
+      "prompt": "Generate exactly 6 image prompts for Ryxen with consistent identity: 2 close-ups, 2 full-body, 2 dynamic poses. Output as lines prefixed with CLOSE-UP 1, CLOSE-UP 2, FULL-BODY 1, FULL-BODY 2, DYNAMIC 1, DYNAMIC 2. Then add one line prefixed NEGATIVE PROMPT: ... shared for all.",
       "expects_json": false,
       "required_keywords": ["close-up", "full-body", "dynamic", "negative prompt", "Ryxen"]
     },
@@ -30,7 +30,7 @@
       "id": "production_plan",
       "task_type": "planning",
       "domain": "animation",
-      "prompt": "Create a weekly semi-autonomous production plan for an animation studio that must run while the user is at work. Include approvals, quality gates, and budget caps.",
+      "prompt": "Create a weekly semi-autonomous production plan for an animation studio that must run while the user is at work. Output sections titled: Schedule, Automation, Approval Gates, Quality Gates, Budget Controls. Keep it concise and operational.",
       "expects_json": false,
       "required_keywords": ["quality gate", "approval", "budget", "schedule", "automation"]
     }

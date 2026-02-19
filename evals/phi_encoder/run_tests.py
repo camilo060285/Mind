@@ -20,7 +20,7 @@ import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 
 @dataclass
@@ -59,23 +59,69 @@ def _extract_json_blob(text: str) -> dict[str, Any] | None:
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict):
-            return parsed
+            return cast(dict[str, Any], parsed)
     except json.JSONDecodeError:
         pass
 
     match = re.search(r"\{.*\}", text, flags=re.DOTALL)
-    if not match:
+    if match:
+        candidate = match.group(0)
+        try:
+            parsed = json.loads(candidate)
+            if isinstance(parsed, dict):
+                return cast(dict[str, Any], parsed)
+        except json.JSONDecodeError:
+            pass
+
+    start = text.find("{")
+    if start == -1:
         return None
 
-    candidate = match.group(0)
-    try:
-        parsed = json.loads(candidate)
-        if isinstance(parsed, dict):
-            return parsed
-    except json.JSONDecodeError:
-        return None
+    depth = 0
+    in_string = False
+    escaped = False
+    for index in range(start, len(text)):
+        char = text[index]
+        if escaped:
+            escaped = False
+            continue
+        if char == "\\":
+            escaped = True
+            continue
+        if char == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                candidate = text[start : index + 1]
+                try:
+                    parsed = json.loads(candidate)
+                    if isinstance(parsed, dict):
+                        return cast(dict[str, Any], parsed)
+                except json.JSONDecodeError:
+                    return None
 
     return None
+
+
+def _strip_prompt_echo(output: str, prompt: str) -> tuple[str, list[str]]:
+    notes: list[str] = []
+    stripped_output = output.strip()
+    stripped_prompt = prompt.strip()
+
+    if stripped_prompt and stripped_output.startswith(stripped_prompt):
+        stripped_output = stripped_output[len(stripped_prompt) :].strip()
+        notes.append("prompt_echo_trimmed")
+
+    if not stripped_output and stripped_prompt:
+        notes.append("prompt_echo_only")
+
+    return stripped_output, notes
 
 
 def _prompt_for_case(case: dict[str, Any], schema: dict[str, Any]) -> str:
@@ -123,24 +169,28 @@ def _run_phi(prompt: str, args: argparse.Namespace) -> tuple[str, list[str]]:
         return "{}", ["dry_run_enabled"]
 
     if args.command_template:
-        command = args.command_template.format(prompt=prompt)
-        proc = subprocess.run(
-            command,
-            shell=True,
-            capture_output=True,
-            text=True,
-            timeout=args.timeout,
-        )
+        command_str = args.command_template.format(prompt=prompt)
+        try:
+            proc = subprocess.run(
+                command_str,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=args.timeout,
+            )
+        except subprocess.TimeoutExpired:
+            return "", [f"invocation_timeout:{args.timeout}s"]
         if proc.returncode != 0:
             return "", [f"command_failed: {proc.stderr.strip()}"]
-        return proc.stdout.strip(), notes
+        output, trim_notes = _strip_prompt_echo(proc.stdout, prompt)
+        return output, notes + trim_notes
 
     llama_bin = args.llama_bin
     model_file = args.model_file
     if not llama_bin or not model_file:
         return "", ["missing_llama_or_model_path"]
 
-    command = [
+    command: list[str] = [
         llama_bin,
         "-m",
         model_file,
@@ -159,14 +209,16 @@ def _run_phi(prompt: str, args: argparse.Namespace) -> tuple[str, list[str]]:
             text=True,
             timeout=args.timeout,
         )
+    except subprocess.TimeoutExpired:
+        return "", [f"invocation_timeout:{args.timeout}s"]
     except Exception as exc:  # pylint: disable=broad-except
         return "", [f"invocation_error: {exc}"]
 
     if proc.returncode != 0:
         return "", [f"llama_failed: {proc.stderr.strip()}"]
 
-    output = proc.stdout.strip()
-    return output, notes
+    output, trim_notes = _strip_prompt_echo(proc.stdout, prompt)
+    return output, notes + trim_notes
 
 
 def _validate_required_fields(
@@ -218,21 +270,24 @@ def _check_null_policy(
 def _collect_entity_names(payload: dict[str, Any]) -> set[str]:
     names: set[str] = set()
 
-    for item in payload.get("entities", []):
+    entities_list = payload.get("entities", [])
+    for item in entities_list:
         if isinstance(item, dict):
-            raw_name = item.get("name")
+            raw_name = cast(Any, item.get("name"))  # type: ignore[misc]
             if isinstance(raw_name, str) and raw_name.strip():
                 names.add(raw_name.strip().lower())
 
-    extraction = payload.get("extraction")
+    extraction = cast(Any, payload.get("extraction"))
     if isinstance(extraction, dict):
-        for item in extraction.get("entities", []):
+        extraction_entities = cast(Any, extraction.get("entities", []))  # type: ignore[misc]
+        for item in extraction_entities:
             if isinstance(item, str) and item.strip():
                 names.add(item.strip().lower())
 
-    canon = payload.get("canon")
+    canon = cast(Any, payload.get("canon"))
     if isinstance(canon, dict):
-        for item in canon.get("characters", []):
+        canon_characters = cast(Any, canon.get("characters", []))  # type: ignore[misc]
+        for item in canon_characters:
             if isinstance(item, str) and item.strip():
                 names.add(item.strip().lower())
 
@@ -276,15 +331,18 @@ def _check_canon(
 
 def _check_conflict(payload: dict[str, Any]) -> tuple[bool, list[str]]:
     notes: list[str] = []
-    extraction = payload.get("extraction")
+    extraction = cast(Any, payload.get("extraction"))
     if not isinstance(extraction, dict):
         return False, ["missing_extraction"]
 
-    conflicts = extraction.get("conflicts")
+    conflicts = cast(Any, extraction.get("conflicts"))  # type: ignore[misc]
     if not isinstance(conflicts, list):
         return False, ["conflicts_not_array"]
 
-    non_empty = [item for item in conflicts if isinstance(item, str) and item.strip()]
+    non_empty = cast(
+        list[Any],
+        [item for item in conflicts if isinstance(item, str) and item.strip()],
+    )  # type: ignore[misc]
     if not non_empty:
         notes.append("no_conflict_extracted")
         return False, notes
@@ -298,6 +356,41 @@ def _to_rate(values: list[bool]) -> float:
     return round(sum(1 for value in values if value) / len(values), 4)
 
 
+def _note_rate(results: list[CaseResult], prefix: str) -> float:
+    if not results:
+        return 0.0
+    hit_count = sum(
+        1 for item in results if any(note.startswith(prefix) for note in item.notes)
+    )
+    return round(hit_count / len(results), 4)
+
+
+def _repair_json_output(
+    raw_output: str,
+    schema: dict[str, Any],
+    args: argparse.Namespace,
+) -> tuple[dict[str, Any] | None, list[str]]:
+    required_top = schema.get("required", [])
+    repair_prompt = (
+        "You are a JSON repair assistant. Convert the content into one valid JSON object only.\n"
+        "Do not add markdown or explanations.\n"
+        f"Required top-level keys: {json.dumps(required_top)}\n\n"
+        "Content to repair:\n"
+        f"{raw_output}\n"
+    )
+
+    repair_args = argparse.Namespace(**vars(args))
+    repair_args.n_predict = max(int(args.n_predict), 320)
+    repair_args.temperature = 0.1
+
+    repaired_output, repair_notes = _run_phi(repair_prompt, repair_args)
+    repaired_payload = _extract_json_blob(repaired_output)
+    if repaired_payload is None:
+        return None, repair_notes + ["repair_failed"]
+
+    return repaired_payload, repair_notes + ["repaired_json_success"]
+
+
 def _build_diagnosis(summary: dict[str, Any]) -> str:
     total = int(summary["total_cases"])
     if total == 0:
@@ -308,6 +401,8 @@ def _build_diagnosis(summary: dict[str, Any]) -> str:
     canon_rate = float(summary["canon_consistency_rate"])
     conflict_rate = float(summary["conflict_extraction_rate"])
     hallucinated = int(summary["total_hallucinated_characters"])
+    timeout_rate = float(summary.get("invocation_timeout_rate", 0.0))
+    runtime_error_rate = float(summary.get("invocation_error_rate", 0.0))
 
     lines = [
         "# Phi Encoder Diagnosis",
@@ -319,9 +414,16 @@ def _build_diagnosis(summary: dict[str, Any]) -> str:
         f"- Canon consistency: {canon_rate:.1%}",
         f"- Conflict extraction: {conflict_rate:.1%}",
         f"- Hallucinated character count: {hallucinated}",
+        f"- Invocation timeout rate: {timeout_rate:.1%}",
+        f"- Invocation error rate: {runtime_error_rate:.1%}",
         "",
         "## Failure Pattern",
     ]
+
+    if timeout_rate > 0.0 or runtime_error_rate > 0.0:
+        lines.append(
+            "- Primary issue: runtime invocation instability -> fix serving/runtime before interpreting quality metrics."
+        )
 
     if json_rate < 0.9 or schema_rate < 0.8:
         lines.append(
@@ -386,8 +488,8 @@ def main() -> None:
         help="Output diagnosis markdown path",
     )
     parser.add_argument("--max-cases", type=int, default=0)
-    parser.add_argument("--timeout", type=int, default=120)
-    parser.add_argument("--n-predict", type=int, default=320)
+    parser.add_argument("--timeout", type=int, default=180)
+    parser.add_argument("--n-predict", type=int, default=96)
     parser.add_argument("--temperature", type=float, default=0.3)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
@@ -441,6 +543,21 @@ def main() -> None:
         forbidden_hits = 0
         has_conflict = False
 
+        if (
+            not json_valid
+            and raw_output
+            and not any(note.startswith("invocation_timeout:") for note in notes)
+        ):
+            repaired_payload, repair_notes = _repair_json_output(
+                raw_output,
+                schema_data,
+                args,
+            )
+            notes.extend(repair_notes)
+            if repaired_payload is not None:
+                payload = repaired_payload
+                json_valid = True
+
         if json_valid and payload is not None:
             schema_valid, schema_notes = _validate_required_fields(payload, schema_data)
             notes.extend(schema_notes)
@@ -473,20 +590,24 @@ def main() -> None:
             )
         )
 
-    summary = {
+    summary: dict[str, Any] = {
         "total_cases": len(results),
         "json_valid_rate": _to_rate([item.json_valid for item in results]),
         "schema_valid_rate": _to_rate([item.schema_valid for item in results]),
         "null_policy_rate": _to_rate([item.null_policy_ok for item in results]),
         "canon_consistency_rate": _to_rate([item.canon_consistent for item in results]),
         "conflict_extraction_rate": _to_rate([item.has_conflict for item in results]),
+        "invocation_timeout_rate": _note_rate(results, "invocation_timeout:"),
+        "invocation_error_rate": _note_rate(results, "invocation_error:"),
+        "prompt_echo_rate": _note_rate(results, "prompt_echo"),
+        "repair_success_rate": _note_rate(results, "repaired_json_success"),
         "total_hallucinated_characters": sum(
             item.hallucinated_characters for item in results
         ),
         "total_forbidden_fact_hits": sum(item.forbidden_fact_hits for item in results),
     }
 
-    output_payload = {
+    output_payload: dict[str, Any] = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "model": "phi-local",
         "inputs_file": str(inputs_path),

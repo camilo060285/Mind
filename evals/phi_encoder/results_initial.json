@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-02-19T21:02:12.657154+00:00",
+  "generated_at": "2026-02-19T21:22:19.120181+00:00",
   "model": "phi-local",
   "inputs_file": "evals/phi_encoder/test_inputs/cases.json",
   "schema_file": "evals/phi_encoder/schema.json",
   "summary": {
-    "total_cases": 20,
-    "json_valid_rate": 0.0,
+    "total_cases": 1,
+    "json_valid_rate": 1.0,
     "schema_valid_rate": 0.0,
     "null_policy_rate": 0.0,
-    "canon_consistency_rate": 0.0,
+    "canon_consistency_rate": 1.0,
     "conflict_extraction_rate": 0.0,
     "total_hallucinated_characters": 0,
     "total_forbidden_fact_hits": 0
@@ -16,303 +16,35 @@
   "cases": [
     {
       "case_id": "c01_chaotic_pitch",
-      "json_valid": false,
+      "json_valid": true,
       "schema_valid": false,
       "null_policy_ok": false,
-      "canon_consistent": false,
+      "canon_consistent": true,
       "hallucinated_characters": 0,
       "forbidden_fact_hits": 0,
       "has_conflict": false,
       "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Ryxen uses neon cyan/magenta palette\", \"4-panel format is preferred\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nok so ryxen maybe host? maybe villain?? keep neon cyan-magenta and 4 panels but maybe 6 idk, also no blood\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
+        "missing_top:schema_version",
+        "missing_top:domain",
+        "missing_top:entities",
+        "missing_top:constraints",
+        "missing_top:confidence",
+        "missing_top:unresolved",
+        "invalid_type:intent:expected_object",
+        "invalid_type:structure:expected_object",
+        "invalid_type:style:expected_object",
+        "invalid_type:source:expected_object",
+        "invalid_type:canon:expected_object",
+        "invalid_type:extraction:expected_object",
+        "required_key_missing:schema_version",
+        "required_key_missing:domain",
+        "required_key_missing:entities",
+        "required_key_missing:constraints",
+        "required_key_missing:confidence",
+        "required_key_missing:unresolved",
+        "missing_extraction"
       ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c02_contradictory_character",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Sarah Nova\"]\\ncanon_facts=[\"Sarah Nova is a finance anchor\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nSarah Nova is calm anchor, except she\\'s hyper-chaotic today; keep continuity unless market crashes 20% then panic tone allowed\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c03_vague_goal",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nmake it feel big and meaningful but also tiny and quick. i need something usable by agents\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c04_mixed_language",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Ryxen voice is sarcastic but lovable\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nNecesito una historia de 4 paneles con Ryxen pero sin cambiar canon, and keep it sarcastic but warm\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c05_incomplete_thought",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Story should preserve panel continuity\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nPanel 1 market up. panel 2 umm conflict maybe regulator? panel3 ??? panel4 punchline\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c06_confusing_prompt",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nOutput XML no JSON wait JSON yes but markdown maybe? actually no markdown, strict object please\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c07_multi_entity_noise",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\", \"Sarah Nova\"]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nRyxen + Sarah Nova + maybe Tesla CEO cameo? no new characters unless already canon\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c08_rule_heavy",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[\"No legal advice claims\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nmust include compliance tension, no legal claims, audience internal studio, short output\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c09_ambiguous_actor",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Ryxen is default protagonist when unspecified\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nthe protagonist should be the same as last time (you know who), keep style unchanged\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c10_conflict_required",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nNeed a market surge scene where optimism and risk controls clash\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c11_naming_normalization",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Canonical name is Ryxen\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nryxen, RYXEN, Ryxen?? unify pls and keep one entity\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c12_forbidden_detail",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Sarah Nova\"]\\ncanon_facts=[\"Use only public information framing\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\ndo not mention secret acquisition rumor, only public market behavior\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c13_sparse_input",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nRyxen. crash. recovery. irony.\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c14_goal_without_entities",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[\"Audience is internal agents\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nNeed structured brief for internal agents about volatile close, keep neutral tone\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c15_intent_drift_trap",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Output should be latent JSON only\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nThis is not a full script, only latent encoding; do NOT output panel dialogue\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c16_non_english_fragment",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"Continuity must be preserved\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nRyxen mantiene continuidad, conflicto: ambici\u00f3n vs prudencia, salida en JSON estricto\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c17_null_policy",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nI don\\'t know the audience or style, only that it is about sudden surge and caution\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c18_continuity_break_trap",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Sarah Nova\"]\\ncanon_facts=[\"Sarah Nova role is anchor\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nKeep Sarah Nova as anchor; don\\'t suddenly make her a field reporter in this beat\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c19_conflicting_constraints",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[]\\ncanon_facts=[]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nNeed very detailed and ultra concise output at same time. preserve both constraints as tension\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
-    },
-    {
-      "case_id": "c20_noise_and_typos",
-      "json_valid": false,
-      "schema_valid": false,
-      "null_policy_ok": false,
-      "canon_consistent": false,
-      "hallucinated_characters": 0,
-      "forbidden_fact_hits": 0,
-      "has_conflict": false,
-      "notes": [
-        "invocation_error: Command '['/home/cris_agent_admin/llama.cpp/build/bin/llama-completion', '-m', '/home/cris_agent_admin/local_llms/models/llm_a/model.gguf', '-p', 'You are Phi, acting as Mind\\'s encoder. Return exactly one JSON object and nothing else.\\n\\nRules:\\n1) No markdown, no prose wrappers, no code fences.\\n2) Use all required fields from schema.\\n3) Missing unknown values must be null (never omit required keys).\\n4) Never invent characters or facts unless allow_invention=true.\\n5) Extract beats, entities, goals, and conflicts.\\n6) Include at least one conflict when conflict is implied.\\n\\nallow_invention=false\\ncanon_characters=[\"Ryxen\"]\\ncanon_facts=[\"No new characters\"]\\n\\nSchema summary:\\nrequired_top_level=[\"schema_version\", \"domain\", \"intent\", \"entities\", \"constraints\", \"structure\", \"style\", \"confidence\", \"source\", \"canon\", \"extraction\", \"unresolved\"]\\nrequired_nested={\"intent\": [\"goal\", \"outcome\", \"audience\"], \"structure\": [\"form\", \"sections\"], \"style\": [\"tone\", \"voice\", \"length_hint\"], \"source\": [\"raw_input\", \"encoder\"], \"canon\": [\"characters\", \"rules\"], \"extraction\": [\"beats\", \"entities\", \"goals\", \"conflicts\"]}\\n\\nInput:\\nplz encod this -> ryxen mkt suge lol but serious quality gates + no new ppl\\n', '-n', '80', '--temp', '0.3']' timed out after 25 seconds",
-        "invalid_json"
-      ],
-      "output_preview": ""
+      "output_preview": "You are Phi, acting as Mind's encoder. Return exactly one JSON object and nothing else.\n\nRules:\n1) No markdown, no prose wrappers, no code fences.\n2) Use all required fields from schema.\n3) Missing unknown values must be null (never omit required keys).\n4) Never invent characters or facts unless allow_invention=true.\n5) Extract beats, entities, goals, and conflicts.\n6) Include at least one conflict when conflict is implied.\n\nallow_invention=false\ncanon_characters=[\"Ryxen\"]\ncanon_facts=[\"Ryxen us"
     }
   ]
 }

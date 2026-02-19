@@ -1,0 +1,102 @@
+{
+  "cases_file": "benchmarks/animation_studio_cases.json",
+  "rubric_file": "benchmarks/scoring_rubric.json",
+  "results": {
+    "llama_cpp:phi": {
+      "cases": [
+        {
+          "case_id": "encoder_ryxen_identity",
+          "task_type": "encoder",
+          "latency_seconds": 27.599,
+          "keyword_coverage": 0.4,
+          "expects_json": true,
+          "json_valid": false,
+          "schema_notes": [
+            "Output is not valid JSON",
+            "repair_error: Expecting value: line 1 column 1 (char 0)"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.4,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "No comments. No code. No markup. No syntax errors. No grammar errors. No spelling errors. No missing keys. No extra keys. No missing values.\n\nExample input:\nschema_version = 1.0\ndomain = animation\nintent = create\nentities = {\n    \"name\": {\n        \"type\": \"string\",\n        \"pattern\": \"",
+          "auto_weighted_score": 0.1,
+          "auto_weighted_score_normalized": 0.1818
+        },
+        {
+          "case_id": "script_episode_opening",
+          "task_type": "script",
+          "latency_seconds": 22.094,
+          "keyword_coverage": 0.4,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.4,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "Ryxen was working on his latest script. It was a satire of the wild market spikes that had been causing havoc in the stock market. He wanted to make it funny but also keep the characters lovable. \n\nPanel 1: \nRyxen: \"Oh my God, did you see the market spike? I'm going to make a fortune today!\"\nPanel",
+          "auto_weighted_score": 0.35,
+          "auto_weighted_score_normalized": 0.6364
+        },
+        {
+          "case_id": "shot_prompt_pack",
+          "task_type": "prompt_pack",
+          "latency_seconds": 25.091,
+          "keyword_coverage": 0.2,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.2,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "# In[2]:\n\n\ndef generate_prompts(sess, model, dataset, batch_size, max_iter, use_neg=True, use_close=True, use_dyn=True):\n    '''\n    Generates prompts for Ryxen.\n    '''\n    # Create empty list to store prompts\n    prom",
+          "auto_weighted_score": 0.31,
+          "auto_weighted_score_normalized": 0.5636
+        },
+        {
+          "case_id": "production_plan",
+          "task_type": "planning",
+          "latency_seconds": 19.002,
+          "keyword_coverage": 0.8,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.8,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "#*Your schedule should include:\n#**Production workflows\n#**Automation workflows\n#**Review and approval workflows\n#**Quality and testing workflows\n#**Budget control workflows\n#*Consider using the following template:\n#**Schedules\n#**Automation\n#**Review and Approvals\n#**Quality\n#**B",
+          "auto_weighted_score": 0.45,
+          "auto_weighted_score_normalized": 0.8182
+        }
+      ],
+      "auto_average_score": 0.3025,
+      "auto_average_score_normalized": 0.55
+    }
+  },
+  "ranking": [
+    {
+      "model": "llama_cpp:phi",
+      "auto_average_score": 0.3025,
+      "auto_average_score_normalized": 0.55
+    }
+  ]
+}

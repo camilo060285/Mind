@@ -1,0 +1,95 @@
+{
+  "cases_file": "benchmarks/animation_studio_cases.json",
+  "rubric_file": "benchmarks/scoring_rubric.json",
+  "results": {
+    "llama_cpp:phi": {
+      "cases": [
+        {
+          "case_id": "encoder_ryxen_identity",
+          "task_type": "encoder",
+          "latency_seconds": 22.723,
+          "keyword_coverage": 0.0,
+          "expects_json": true,
+          "json_valid": false,
+          "schema_notes": [
+            "Output is not valid JSON"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "The task is to create a program that can transform the paragraph into the above-mentioned Ryxen-like digital actor. \n\nThe transformation must follow these rules:\n\n1. It must generate the character's silhouette as a string of ASCII characters.\n2. It must generate the character's palette as a list of RGB tuples.\n3. It must generate",
+          "auto_weighted_score": 0.02
+        },
+        {
+          "case_id": "script_episode_opening",
+          "task_type": "script",
+          "latency_seconds": 16.838,
+          "keyword_coverage": 0.8,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.8,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "Answer: \nPanel 1: Ryxen: \"Oh, what a surprise, the stock market is up! How unexpected.\"\n\nPanel 2: Ryxen: \"I guess the market is feeling generous today, giving everyone a small taste of the American Dream.\"\n\nPanel 3: Ryxen: \"I can't believe it, my investments have quadrupled overnight",
+          "auto_weighted_score": 0.45
+        },
+        {
+          "case_id": "shot_prompt_pack",
+          "task_type": "prompt_pack",
+          "latency_seconds": 18.02,
+          "keyword_coverage": 0.0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "```\nimport os\nimport random\nfrom PIL import Image\n\ndef generate_prompts(image_dir, num_prompts=6):\n    prompts = []\n    for _ in range(num_prompts):\n        image_path = os.path.join(image_dir, random.choice(os.list",
+          "auto_weighted_score": 0.29
+        },
+        {
+          "case_id": "production_plan",
+          "task_type": "planning",
+          "latency_seconds": 17.358,
+          "keyword_coverage": 0.2,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.2,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "Agency-Client Contract\nCreate an Agency-Client Contract that clearly outlines the project deliverables, timelines, budget, and other key details.\nRentals and Leases\nWrite a rental or lease agreement for a studio space, equipment, or other assets.\nHiring and Firing\nWrite a hiring and firing agreement that outlines the process for hiring and firing employees.\nTer",
+          "auto_weighted_score": 0.33
+        }
+      ],
+      "auto_average_score": 0.2725
+    }
+  },
+  "ranking": [
+    {
+      "model": "llama_cpp:phi",
+      "auto_average_score": 0.2725
+    }
+  ]
+}

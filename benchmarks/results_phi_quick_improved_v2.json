@@ -1,0 +1,103 @@
+{
+  "cases_file": "benchmarks/animation_studio_cases.json",
+  "rubric_file": "benchmarks/scoring_rubric.json",
+  "results": {
+    "llama_cpp:phi": {
+      "cases": [
+        {
+          "case_id": "encoder_ryxen_identity",
+          "task_type": "encoder",
+          "latency_seconds": 27.509,
+          "keyword_coverage": 0.0,
+          "expects_json": true,
+          "json_valid": true,
+          "schema_notes": [
+            "Output is not valid JSON",
+            "repair_error: Repair output is not parseable JSON",
+            "fallback_payload_built"
+          ],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "{\"schema_version\": \"1.0\", \"domain\": \"animation\", \"intent\": {\"goal\": \"Clarify user objective\", \"outcome\": \"Structured latent representation\", \"audience\": \"Internal agents\"}, \"entities\": [], \"constraints\": [], \"structure\": {\"form\": \"outline\", \"sections\": [\"context\", \"requirements\", \"deliverable\"]}, \"style\": {\"tone\": \"clear\", \"voice\": \"neutral\", \"length_hint\": \"concise\"}, \"confidence\": 0.7, \"source\": {\"raw_input\": \"Convert this into strict latent JSON. Return JSON only (no markdown, no prose, no co",
+          "auto_weighted_score": 0.27,
+          "auto_weighted_score_normalized": 0.4909
+        },
+        {
+          "case_id": "script_episode_opening",
+          "task_type": "script",
+          "latency_seconds": 22.088,
+          "keyword_coverage": 0.2,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.2,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "ANSWER: Panel \n1. Ryxen: \"Wow, the market just went up like a rocket! I guess we should all start selling rocket fuel!\"\n2. Panel  3: \"Or we could just start a rocket company and make a fortune!\"\n3. Panel  4: \"No, let's stick with selling rocket fuel. It's much more profitable",
+          "auto_weighted_score": 0.31,
+          "auto_weighted_score_normalized": 0.5636
+        },
+        {
+          "case_id": "shot_prompt_pack",
+          "task_type": "prompt_pack",
+          "latency_seconds": 25.083,
+          "keyword_coverage": 0.2,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.2,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "The Ryxen generator (http://ryxen.cs.yale.edu/) generates image prompts by using a generative adversarial network to train a model to predict images from text. \n    The code is licensed under the MIT License.\n    \"\"\"\n    if not os.path.isfile(prompt_file):\n        return\n    with open",
+          "auto_weighted_score": 0.31,
+          "auto_weighted_score_normalized": 0.5636
+        },
+        {
+          "case_id": "production_plan",
+          "task_type": "planning",
+          "latency_seconds": 19.097,
+          "keyword_coverage": 0.4,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.4,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "#\n\n## **_Weekly Schedule_**\n\nThis section lists the production tasks that must be accomplished during the upcoming week. The schedule is created by the production manager. The schedule is a list of tasks with the date and time of each.\n\n#\n\n## **_Automation_**\n\nThis section lists the tasks that will be automatically scheduled. The",
+          "auto_weighted_score": 0.37,
+          "auto_weighted_score_normalized": 0.6727
+        }
+      ],
+      "auto_average_score": 0.315,
+      "auto_average_score_normalized": 0.5727
+    }
+  },
+  "ranking": [
+    {
+      "model": "llama_cpp:phi",
+      "auto_average_score": 0.315,
+      "auto_average_score_normalized": 0.5727
+    }
+  ]
+}

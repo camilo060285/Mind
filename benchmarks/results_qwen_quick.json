@@ -1,0 +1,101 @@
+{
+  "cases_file": "benchmarks/animation_studio_cases.json",
+  "rubric_file": "benchmarks/scoring_rubric.json",
+  "results": {
+    "llama_cpp:qwen": {
+      "cases": [
+        {
+          "case_id": "encoder_ryxen_identity",
+          "task_type": "encoder",
+          "latency_seconds": 0,
+          "keyword_coverage": 0,
+          "expects_json": true,
+          "json_valid": false,
+          "schema_notes": [
+            "execution_error: llama-completion timed out"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.0,
+            "cost": null
+          },
+          "output_preview": "",
+          "auto_weighted_score": 0.0
+        },
+        {
+          "case_id": "script_episode_opening",
+          "task_type": "script",
+          "latency_seconds": 0,
+          "keyword_coverage": 0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [
+            "execution_error: llama-completion timed out"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.0,
+            "cost": null
+          },
+          "output_preview": "",
+          "auto_weighted_score": 0.0
+        },
+        {
+          "case_id": "shot_prompt_pack",
+          "task_type": "prompt_pack",
+          "latency_seconds": 0,
+          "keyword_coverage": 0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [
+            "execution_error: llama-completion timed out"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.0,
+            "cost": null
+          },
+          "output_preview": "",
+          "auto_weighted_score": 0.0
+        },
+        {
+          "case_id": "production_plan",
+          "task_type": "planning",
+          "latency_seconds": 0,
+          "keyword_coverage": 0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [
+            "execution_error: llama-completion timed out"
+          ],
+          "metrics": {
+            "schema_adherence": 0.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.0,
+            "cost": null
+          },
+          "output_preview": "",
+          "auto_weighted_score": 0.0
+        }
+      ],
+      "auto_average_score": 0.0
+    }
+  },
+  "ranking": [
+    {
+      "model": "llama_cpp:qwen",
+      "auto_average_score": 0.0
+    }
+  ]
+}

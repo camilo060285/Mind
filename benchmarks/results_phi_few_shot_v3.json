@@ -1,0 +1,103 @@
+{
+  "cases_file": "benchmarks/animation_studio_cases.json",
+  "rubric_file": "benchmarks/scoring_rubric.json",
+  "results": {
+    "llama_cpp:phi": {
+      "cases": [
+        {
+          "case_id": "encoder_ryxen_identity",
+          "task_type": "encoder",
+          "latency_seconds": 47.433,
+          "keyword_coverage": 0.2,
+          "expects_json": true,
+          "json_valid": true,
+          "schema_notes": [
+            "Output is not valid JSON",
+            "repair_error: Repair output is not parseable JSON",
+            "fallback_payload_built"
+          ],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.2,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "{\"schema_version\": \"1.0\", \"domain\": \"animation\", \"intent\": {\"goal\": \"Clarify user objective\", \"outcome\": \"Structured latent representation\", \"audience\": \"Internal agents\"}, \"entities\": [], \"constraints\": [], \"structure\": {\"form\": \"outline\", \"sections\": [\"context\", \"requirements\", \"deliverable\"]}, \"style\": {\"tone\": \"clear\", \"voice\": \"neutral\", \"length_hint\": \"concise\"}, \"confidence\": 0.7, \"source\": {\"raw_input\": \"Convert the following brief into strict latent JSON. Return ONLY valid JSON with the",
+          "auto_weighted_score": 0.31,
+          "auto_weighted_score_normalized": 0.5636
+        },
+        {
+          "case_id": "script_episode_opening",
+          "task_type": "script",
+          "latency_seconds": 22.164,
+          "keyword_coverage": 0.6,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.6,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "ANSWER: \nPanel 1:\nRyxen: \"Well, isn't this just the cherry on top of the cake? The market's gone wild! I should have known I'd have to deal with this on my day off.\"\nPanel 2:\nRyxen: \"Oh joy, another day of being a market analyst. I can't wait to see",
+          "auto_weighted_score": 0.39,
+          "auto_weighted_score_normalized": 0.7091
+        },
+        {
+          "case_id": "shot_prompt_pack",
+          "task_type": "prompt_pack",
+          "latency_seconds": 25.122,
+          "keyword_coverage": 0.0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 0.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.2,
+            "cost": null
+          },
+          "output_preview": "For each image prompt, generate  8 images. Output as lines prefixed by the prompt.\n\nAdd a newline after each image output.\n\nOutput the following:\n\nFor each image prompt, generate  2 images, the positive and negative. Output as lines prefixed by the prompt.\n\nAdd a newline after each image output.\n\nOutput the",
+          "auto_weighted_score": 0.27,
+          "auto_weighted_score_normalized": 0.4909
+        },
+        {
+          "case_id": "production_plan",
+          "task_type": "planning",
+          "latency_seconds": 14.201,
+          "keyword_coverage": 1.0,
+          "expects_json": false,
+          "json_valid": false,
+          "schema_notes": [],
+          "metrics": {
+            "schema_adherence": 1.0,
+            "instruction_following": 1.0,
+            "character_consistency": null,
+            "script_quality": null,
+            "latency": 0.4,
+            "cost": null
+          },
+          "output_preview": "- Create a weekly semi-autonomous production plan for an animation studio that must run while the user is at work. Output sections titled: Schedule, Automation, Approval Gates, Quality Gates, Budget Controls. Keep it concise and operational. [end of text]",
+          "auto_weighted_score": 0.49,
+          "auto_weighted_score_normalized": 0.8909
+        }
+      ],
+      "auto_average_score": 0.365,
+      "auto_average_score_normalized": 0.6636
+    }
+  },
+  "ranking": [
+    {
+      "model": "llama_cpp:phi",
+      "auto_average_score": 0.365,
+      "auto_average_score_normalized": 0.6636
+    }
+  ]
+}
