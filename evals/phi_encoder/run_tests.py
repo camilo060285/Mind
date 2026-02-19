@@ -339,10 +339,12 @@ def _check_conflict(payload: dict[str, Any]) -> tuple[bool, list[str]]:
     if not isinstance(conflicts, list):
         return False, ["conflicts_not_array"]
 
-    non_empty = cast(
-        list[Any],
-        [item for item in conflicts if isinstance(item, str) and item.strip()],
-    )  # type: ignore[misc]
+    # Filter for non-empty string conflicts
+    non_empty: list[Any] = []
+    for item in conflicts:  # type: ignore[misc]
+        if isinstance(item, str) and item.strip():
+            non_empty.append(item)
+
     if not non_empty:
         notes.append("no_conflict_extracted")
         return False, notes
