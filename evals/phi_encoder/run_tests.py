@@ -130,19 +130,7 @@ def _prompt_for_case(case: dict[str, Any], schema: dict[str, Any]) -> str:
     allow_invention = bool(case.get("allow_invention", False))
     required_top = schema.get("required", [])
 
-    nested_required = {
-        "intent": ["goal", "outcome", "audience"],
-        "structure": ["form", "sections"],
-        "style": ["tone", "voice", "length_hint"],
-        "source": ["raw_input", "encoder"],
-        "canon": ["characters", "rules"],
-        "extraction": ["beats", "entities", "goals", "conflicts"],
-    }
-
-    schema_summary = (
-        f"required_top_level={json.dumps(required_top)}\n"
-        f"required_nested={json.dumps(nested_required)}"
-    )
+    schema_summary = f"required_top_level={json.dumps(required_top)}"
 
     return (
         "You are Phi, acting as Mind's encoder. "
@@ -152,8 +140,11 @@ def _prompt_for_case(case: dict[str, Any], schema: dict[str, Any]) -> str:
         "2) Use all required fields from schema.\n"
         "3) Missing unknown values must be null (never omit required keys).\n"
         "4) Never invent characters or facts unless allow_invention=true.\n"
-        "5) Extract beats, entities, goals, and conflicts.\n"
-        "6) Include at least one conflict when conflict is implied.\n\n"
+        "5) Always fill in order: intent -> entities -> beats -> constraints -> style.\n"
+        "6) Ensure at least one entity and one beat when possible.\n"
+        "7) Put conflicts in beats[].conflict (use null if none).\n\n"
+        "Minimal valid shape:\n"
+        '{"intent":"...","entities":["..."],"beats":[{"id":"beat_1","goal":"...","conflict":null}],"constraints":{"never_invent":true},"style":{"tone":"..."}}\n\n'
         f"allow_invention={str(allow_invention).lower()}\n"
         f"canon_characters={json.dumps(canon_characters)}\n"
         f"canon_facts={json.dumps(canon_facts)}\n\n"
@@ -230,27 +221,37 @@ def _validate_required_fields(
         if key not in payload:
             notes.append(f"missing_top:{key}")
 
-    nested_required = {
-        "intent": ["goal", "outcome", "audience"],
-        "structure": ["form", "sections"],
-        "style": ["tone", "voice", "length_hint"],
-        "source": ["raw_input", "encoder"],
-        "canon": ["characters", "rules"],
-        "extraction": ["beats", "entities", "goals", "conflicts"],
-    }
+    entities = cast(Any, payload.get("entities"))
+    if entities is not None and not isinstance(entities, list):
+        notes.append("invalid_type:entities:expected_array")
+    elif isinstance(entities, list) and not entities:
+        notes.append("empty_entities")
 
-    for section, required in nested_required.items():
-        if section not in payload:
-            continue
-        value = payload.get(section)
-        if value is None:
-            continue
-        if not isinstance(value, dict):
-            notes.append(f"invalid_type:{section}:expected_object")
-            continue
-        for key in required:
-            if key not in value:
-                notes.append(f"missing_nested:{section}.{key}")
+    beats = cast(Any, payload.get("beats"))
+    if beats is not None and not isinstance(beats, list):
+        notes.append("invalid_type:beats:expected_array")
+    elif isinstance(beats, list):
+        if not beats:
+            notes.append("empty_beats")
+        for index, beat in enumerate(beats):  # type: ignore[misc]
+            if not isinstance(beat, dict):
+                notes.append(f"invalid_type:beats[{index}]:expected_object")
+                continue
+            for key in ["id", "goal", "conflict"]:
+                if key not in beat:
+                    notes.append(f"missing_nested:beats[{index}].{key}")
+
+    constraints = payload.get("constraints")
+    if constraints is not None and not isinstance(constraints, dict):
+        notes.append("invalid_type:constraints:expected_object")
+    elif isinstance(constraints, dict) and "never_invent" not in constraints:
+        notes.append("missing_nested:constraints.never_invent")
+
+    style = payload.get("style")
+    if style is not None and not isinstance(style, dict):
+        notes.append("invalid_type:style:expected_object")
+    elif isinstance(style, dict) and "tone" not in style:
+        notes.append("missing_nested:style.tone")
 
     return len(notes) == 0, notes
 
@@ -272,24 +273,12 @@ def _collect_entity_names(payload: dict[str, Any]) -> set[str]:
 
     entities_list = payload.get("entities", [])
     for item in entities_list:
+        if isinstance(item, str) and item.strip():
+            names.add(item.strip().lower())
         if isinstance(item, dict):
             raw_name = cast(Any, item.get("name"))  # type: ignore[misc]
             if isinstance(raw_name, str) and raw_name.strip():
                 names.add(raw_name.strip().lower())
-
-    extraction = cast(Any, payload.get("extraction"))
-    if isinstance(extraction, dict):
-        extraction_entities = cast(Any, extraction.get("entities", []))  # type: ignore[misc]
-        for item in extraction_entities:
-            if isinstance(item, str) and item.strip():
-                names.add(item.strip().lower())
-
-    canon = cast(Any, payload.get("canon"))
-    if isinstance(canon, dict):
-        canon_characters = cast(Any, canon.get("characters", []))  # type: ignore[misc]
-        for item in canon_characters:
-            if isinstance(item, str) and item.strip():
-                names.add(item.strip().lower())
 
     return names
 
@@ -331,19 +320,17 @@ def _check_canon(
 
 def _check_conflict(payload: dict[str, Any]) -> tuple[bool, list[str]]:
     notes: list[str] = []
-    extraction = cast(Any, payload.get("extraction"))
-    if not isinstance(extraction, dict):
-        return False, ["missing_extraction"]
+    beats = cast(Any, payload.get("beats"))
+    if not isinstance(beats, list):
+        return False, ["beats_not_array"]
 
-    conflicts = cast(Any, extraction.get("conflicts"))  # type: ignore[misc]
-    if not isinstance(conflicts, list):
-        return False, ["conflicts_not_array"]
-
-    # Filter for non-empty string conflicts
-    non_empty: list[Any] = []
-    for item in conflicts:  # type: ignore[misc]
-        if isinstance(item, str) and item.strip():
-            non_empty.append(item)
+    non_empty: list[str] = []
+    for item in beats:  # type: ignore[misc]
+        if not isinstance(item, dict):
+            continue
+        conflict = cast(Any, item.get("conflict"))  # type: ignore[misc]
+        if isinstance(conflict, str) and conflict.strip():
+            non_empty.append(conflict.strip())
 
     if not non_empty:
         notes.append("no_conflict_extracted")
@@ -491,7 +478,7 @@ def main() -> None:
     )
     parser.add_argument("--max-cases", type=int, default=0)
     parser.add_argument("--timeout", type=int, default=180)
-    parser.add_argument("--n-predict", type=int, default=96)
+    parser.add_argument("--n-predict", type=int, default=320)
     parser.add_argument("--temperature", type=float, default=0.3)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
