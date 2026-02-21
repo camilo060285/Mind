@@ -178,9 +178,35 @@ def _split_markdown_chunks(text: str) -> list[str]:
 
     if not chunks:
         cleaned = text.strip()
-        return [cleaned] if cleaned else []
+        chunks = [cleaned] if cleaned else []
 
-    return chunks
+    final_chunks: list[str] = []
+    for chunk in chunks:
+        compact_lines = [line.strip() for line in chunk.splitlines() if line.strip()]
+        compact = "\n".join(compact_lines)
+        if len(compact) <= 260:
+            final_chunks.append(compact)
+            continue
+        sentences = re.split(r"(?<=[.!?])\s+", compact)
+        current_sentence = ""
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if not sentence:
+                continue
+            candidate = (
+                f"{current_sentence} {sentence}".strip()
+                if current_sentence
+                else sentence
+            )
+            if len(candidate) > 260 and current_sentence:
+                final_chunks.append(current_sentence)
+                current_sentence = sentence
+            else:
+                current_sentence = candidate
+        if current_sentence:
+            final_chunks.append(current_sentence)
+
+    return [chunk for chunk in final_chunks if chunk]
 
 
 def _load_canon_chunks(canon_dir: Path) -> list[tuple[str, str]]:
@@ -225,6 +251,11 @@ def _retrieve_canon_context(
         return ""
 
     scored: list[tuple[int, str, str]] = []
+    canon_names = {
+        value.strip().lower()
+        for value in case.get("canon_characters", [])
+        if isinstance(value, str) and value.strip()
+    }
     for source_name, chunk in canon_chunks:
         chunk_tokens = _tokenize_for_retrieval(chunk)
         overlap = len(query_tokens.intersection(chunk_tokens))
@@ -234,6 +265,11 @@ def _retrieve_canon_context(
         for name in case.get("canon_characters", []):
             if isinstance(name, str) and name.strip() and name.lower() in chunk.lower():
                 bonus += 2
+        source_lower = source_name.lower()
+        if any(name in source_lower for name in canon_names):
+            bonus += 3
+        if "environment" in source_lower:
+            bonus -= 1
         scored.append((overlap + bonus, source_name, chunk))
 
     if not scored:
@@ -245,8 +281,8 @@ def _retrieve_canon_context(
 
     for _, source_name, chunk in scored[: max(top_k * 2, top_k)]:
         compact_chunk = chunk
-        if len(compact_chunk) > 420:
-            compact_chunk = compact_chunk[:420].rstrip() + "..."
+        if len(compact_chunk) > 240:
+            compact_chunk = compact_chunk[:240].rstrip() + "..."
         entry = f"[{source_name}]\n{compact_chunk}\n"
         if used_chars + len(entry) > max_chars:
             remaining = max_chars - used_chars
@@ -285,9 +321,9 @@ def _implied_conflict_from_input(case: dict[str, Any]) -> str | None:
 
 
 def _load_prompt_template(prompt_file: str | None = None) -> str:
-    """Load prompt from file, default to v3."""
+    """Load prompt from file, default to minimal prompt."""
     if prompt_file is None:
-        prompt_file = "encoder/phi_prompt_v3.txt"
+        prompt_file = "encoder/phi_prompt_minimal.txt"
 
     prompt_path = Path(prompt_file)
     if prompt_path.exists():
@@ -619,7 +655,7 @@ def _build_diagnosis(summary: dict[str, Any]) -> str:
         [
             "",
             "## Next Iteration Order",
-            "1. Prompt hardening (`encoder/phi_prompt_v2.txt`).",
+            "1. Prompt hardening (`encoder/phi_prompt_minimal.txt`).",
             "2. RAG injection with canon and schema references.",
             "3. Optional fine-tuning only if instability persists after steps 1-2.",
             "",
@@ -772,6 +808,30 @@ def main() -> None:
                 json_valid = True
 
         if json_valid and payload is not None:
+            canon_characters = [
+                value.strip()
+                for value in case.get("canon_characters", [])
+                if isinstance(value, str) and value.strip()
+            ]
+            allow_invention = bool(case.get("allow_invention", False))
+            if canon_characters and not allow_invention:
+                canon_lookup = {name.lower() for name in canon_characters}
+                entities = payload.get("entities")
+                if isinstance(entities, list):
+                    filtered_entities = []
+                    for entity in entities:
+                        if (
+                            isinstance(entity, str)
+                            and entity.strip().lower() in canon_lookup
+                        ):
+                            filtered_entities.append(entity)
+                    if filtered_entities != entities:
+                        payload["entities"] = filtered_entities
+                        notes.append("entities_clamped_to_canon")
+                    if not payload.get("entities"):
+                        payload["entities"] = [canon_characters[0]]
+                        notes.append("entities_defaulted_to_primary_canon")
+
             schema_valid, schema_notes = _validate_required_fields(payload, schema_data)
             notes.extend(schema_notes)
 

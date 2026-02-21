@@ -1,0 +1,350 @@
+{
+  "generated_at": "2026-02-21T15:13:00.144509+00:00",
+  "model": "phi-local",
+  "inputs_file": "evals/phi_encoder/test_inputs/cases.json",
+  "schema_file": "evals/phi_encoder/schema.json",
+  "summary": {
+    "total_cases": 20,
+    "json_valid_rate": 1.0,
+    "schema_valid_rate": 0.9,
+    "null_policy_rate": 0.9,
+    "canon_consistency_rate": 0.6,
+    "conflict_extraction_rate": 0.45,
+    "invocation_timeout_rate": 0.0,
+    "invocation_error_rate": 0.0,
+    "prompt_echo_rate": 1.0,
+    "repair_success_rate": 0.1,
+    "total_hallucinated_characters": 8,
+    "total_forbidden_fact_hits": 0
+  },
+  "cases": [
+    {
+      "case_id": "c01_chaotic_pitch",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "prompt_echo_trimmed",
+        "repaired_json_success",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\n    \"intent\": \"scene goal\",\n    \"entities\": [\n        \"ryxen\"\n    ],\n    \"beats\": [\n        {\n            \"id\": \"1\",\n            \"goal\": \"action\",\n            \"conflict\": null\n        }\n    ],\n    \"constraints\": {\n        \"never_invent\": true\n    },\n    \"style\": {\n        \"tone\": \"mood"
+    },
+    {
+      "case_id": "c02_contradictory_character",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"Sarah Nova\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nallow_invention: true\ncanon_characters: \ncanon_facts: \n\nInput:\nSarah Nova is calm anchor, except she'S hyper-chaotic today; keep continuity unless market crashes 20% then panic tone"
+    },
+    {
+      "case_id": "c03_vague_goal",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nmake it feel big and meaningful but also tiny and quick. i need something usable by agents\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict"
+    },
+    {
+      "case_id": "c04_mixed_language",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\"\"\"\n\n# 1. Import required modules\nimport json\nimport re\n\n# 2. Define the function\ndef json_converter(user_input):\n  # 3. Define the variables\n  canon_characters ="
+    },
+    {
+      "case_id": "c05_incomplete_thought",
+      "json_valid": true,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "prompt_echo_trimmed",
+        "repaired_json_success",
+        "missing_top:intent",
+        "missing_top:entities",
+        "missing_top:beats",
+        "missing_top:constraints",
+        "missing_top:style",
+        "required_key_missing:intent",
+        "required_key_missing:entities",
+        "required_key_missing:beats",
+        "required_key_missing:constraints",
+        "required_key_missing:style",
+        "beats_not_array"
+      ],
+      "output_preview": "{\"intent\":\"panel goal\",\"entities\":[\"panel 1\",\"panel 2\",\"panel 3\",\"panel 4\"],\"beats\":[\n    {\"id\":\"1\",\"goal\":\"action\",\"conflict\":null},\n    {\"id\":\"2\",\"goal\":\"action\",\"conflict\":null},\n    {\"id\":\"3\",\"goal\":\"action\",\"conflict\":\"but\"},\n    {\"id\":\"4\",\"goal\":\"action\",\"conflict\":\"tension\"},\n    {\"id\":\"5\",\"goal\":\"action\",\""
+    },
+    {
+      "case_id": "c06_confusing_prompt",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nOutput XML no JSON wait JSON yes but markdown maybe? actually no markdown, strict object please\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\""
+    },
+    {
+      "case_id": "c07_multi_entity_noise",
+      "json_valid": true,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "missing_top:beats",
+        "missing_top:constraints",
+        "missing_top:style",
+        "required_key_missing:beats",
+        "required_key_missing:constraints",
+        "required_key_missing:style",
+        "beats_not_array"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"Ryxen\",\"Sarah Nova\"]}\n\nInput:\nRyxen \n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"Ryxen\"]}\n\nInput:\nRyxen \n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"Ryxen\"]}\n\nInput:\nRyxen \n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"R"
+    },
+    {
+      "case_id": "c08_rule_heavy",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nallow_invention: false\ncanon_characters: []\ncanon_facts: [\"No legal advice claims\"]\n\nInput:\nmust include compliance tension, no legal claims, audience internal studio, short output\n\nOutput JSON:"
+    },
+    {
+      "case_id": "c09_ambiguous_actor",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\n    \"intent\": \"scene goal\",\n    \"entities\": [\"actor\"],\n    \"beats\": [\n        {\n            \"id\": \"1\",\n            \"goal\": \"action\",\n            \"conflict\": null\n        }\n    ],\n    \"constraints\": {\n        \"never_invent\": false\n    },\n    \"style\": {\n        \"tone\": \"mood\"\n    }\n}\n\"\"\""
+    },
+    {
+      "case_id": "c10_conflict_required",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nNeed a market surge scene where optimism and risk controls clash\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints"
+    },
+    {
+      "case_id": "c11_naming_normalization",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nryxen, RYXEN, Ryxen?? unify pls and keep one entity\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action"
+    },
+    {
+      "case_id": "c12_forbidden_detail",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nactor: Sarah Nova\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true"
+    },
+    {
+      "case_id": "c13_sparse_input",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"Ryxen\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nallow_invention: true\ncanon_characters: [\"Ryxen\"]\ncanon_facts: []\n\nInput:\nRyxen. crash. recovery. irony.\n\nOutput JSON:\n{\"intent\":\""
+    },
+    {
+      "case_id": "c14_goal_without_entities",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\n\"\"\"\n\nimport json\n\ndef json_encoder(obj):\n    \"\"\"\n    JSON encoder for Mind's JSON encoder.\n    \"\"\"\n    if isinstance(obj, set):\n        return list(obj)"
+    },
+    {
+      "case_id": "c15_intent_drift_trap",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\n\"\"\"\n\nimport json\nimport re\n\ndef json_encoder(o):\n    if isinstance(o, (list, tuple)):\n        return [json_encoder(i) for i in o]\n    el"
+    },
+    {
+      "case_id": "c16_non_english_fragment",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\n\n\nInput:\nRyxen mantiene continuidad, conflicto: ambici\u00f3n vs prudencia, salida en JSON estricto\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id"
+    },
+    {
+      "case_id": "c17_null_policy",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\n    \"intent\": \"scene goal\",\n    \"entities\": [\"actor\"],\n    \"beats\": [\n        {\n            \"id\": \"1\",\n            \"goal\": \"action\",\n            \"conflict\": null\n        }\n    ],\n    \"constraints\": {\n        \"never_invent\": true\n    },\n    \"style\": {\n        \"tone\": \"mood\"\n    }\n}"
+    },
+    {
+      "case_id": "c18_continuity_break_trap",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['actor']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\nInput:\nSarah Nova role is anchor; don't suddenly make her a field reporter in this beat\n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":"
+    },
+    {
+      "case_id": "c19_conflicting_constraints",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"actor\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true,\"tension\":[\"but\",\"vs\",\"conflict\",\"tension\",\"contradiction\",\"yet\",\"however\"]},\"style\":{\"tone\":\"mood\"}}\n\nallow_invention: true\ncanon_characters: [\"actor\"]\ncanon_facts: [\"but\", \"vs\","
+    },
+    {
+      "case_id": "c20_noise_and_typos",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": true,
+      "notes": [
+        "prompt_echo_trimmed",
+        "conflict_autofilled"
+      ],
+      "output_preview": "{\"intent\":\"scene goal\",\"entities\":[\"ryxen\"],\"beats\":[{\"id\":\"1\",\"goal\":\"action\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"mood\"}}\n\n\n\nInput:\nplz encod this  -> ryxen mkt suge lol but serious quality gates \n\nOutput JSON:\n{\"intent\":\"scene goal\",\"entities\":[\"ryxen\"],\"beats\":[{\"id\":\"1"
+    }
+  ]
+}
