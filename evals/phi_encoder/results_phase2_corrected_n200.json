@@ -1,0 +1,322 @@
+{
+  "generated_at": "2026-02-21T14:32:16.378168+00:00",
+  "model": "phi-local",
+  "inputs_file": "evals/phi_encoder/test_inputs/cases.json",
+  "schema_file": "evals/phi_encoder/schema.json",
+  "summary": {
+    "total_cases": 20,
+    "json_valid_rate": 0.0,
+    "schema_valid_rate": 0.0,
+    "null_policy_rate": 0.0,
+    "canon_consistency_rate": 0.0,
+    "conflict_extraction_rate": 0.0,
+    "invocation_timeout_rate": 0.0,
+    "invocation_error_rate": 0.0,
+    "prompt_echo_rate": 0.0,
+    "repair_success_rate": 0.0,
+    "total_hallucinated_characters": 0,
+    "total_forbidden_fact_hits": 0
+  },
+  "cases": [
+    {
+      "case_id": "c01_chaotic_pitch",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c02_contradictory_character",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c03_vague_goal",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c04_mixed_language",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c05_incomplete_thought",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c06_confusing_prompt",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c07_multi_entity_noise",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c08_rule_heavy",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c09_ambiguous_actor",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c10_conflict_required",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c11_naming_normalization",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c12_forbidden_detail",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c13_sparse_input",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c14_goal_without_entities",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c15_intent_drift_trap",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c16_non_english_fragment",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c17_null_policy",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c18_continuity_break_trap",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c19_conflicting_constraints",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c20_noise_and_typos",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "missing_llama_or_model_path",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    }
+  ]
+}

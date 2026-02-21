@@ -644,7 +644,7 @@ def main() -> None:
         help="Output diagnosis markdown path",
     )
     parser.add_argument("--max-cases", type=int, default=0)
-    parser.add_argument("--timeout", type=int, default=180)
+    parser.add_argument("--timeout", type=int, default=240)
     parser.add_argument("--n-predict", type=int, default=320)
     parser.add_argument("--temperature", type=float, default=0.3)
     parser.add_argument("--dry-run", action="store_true")
