@@ -307,42 +307,24 @@ def _prompt_for_case(
     canon_characters = case.get("canon_characters", [])
     canon_facts = case.get("canon_facts", [])
     allow_invention = bool(case.get("allow_invention", False))
+    user_input = case.get("input", "")
 
     # Use provided template or load default
     if not prompt_template:
         prompt_template = _load_prompt_template()
 
-    # Build canon context section
-    canon_section = ""
-    if canon_characters or canon_facts:
-        canon_section = "Canon reference:\n"
-        if canon_characters:
-            canon_section += f"  Characters: {json.dumps(canon_characters)}\n"
-        if canon_facts:
-            canon_section += f"  Facts: {json.dumps(canon_facts)}\n"
-        canon_section += "\n"
-
-    # Build RAG context section
-    rag_section = ""
-    if rag_context.strip():
-        rag_section = f"Retrieved reference material:\n{rag_context}\n\n"
-
     # Fill placeholder variables in template
+    rag_section = f"Retrieved canon:\n{rag_context}\n\n" if rag_context.strip() else ""
+
     filled_template = (
         prompt_template.replace("{ALLOW_INVENTION}", str(allow_invention).lower())
         .replace("{CANON_CHARACTERS}", json.dumps(canon_characters))
         .replace("{CANON_FACTS}", json.dumps(canon_facts))
+        .replace("{RAG_CONTEXT}", rag_section.strip())
+        .replace("{INPUT}", user_input)
     )
 
-    # Assemble full prompt
-    full_prompt = (
-        filled_template
-        + f"{canon_section}"
-        + f"{rag_section}"
-        + f"User input:\n{case.get('input', '')}\n"
-    )
-
-    return full_prompt
+    return filled_template
 
 
 def _run_phi(prompt: str, args: argparse.Namespace) -> tuple[str, list[str]]:
@@ -708,7 +690,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--prompt-file",
-        default="encoder/phi_prompt_v3.txt",
+        default="encoder/phi_prompt_minimal.txt",
         help="Path to prompt template file (replaces hardcoded prompt)",
     )
 
