@@ -284,40 +284,65 @@ def _implied_conflict_from_input(case: dict[str, Any]) -> str | None:
     return None
 
 
+def _load_prompt_template(prompt_file: str | None = None) -> str:
+    """Load prompt from file, default to v3."""
+    if prompt_file is None:
+        prompt_file = "encoder/phi_prompt_v3.txt"
+
+    prompt_path = Path(prompt_file)
+    if prompt_path.exists():
+        return prompt_path.read_text(encoding="utf-8")
+
+    # Fallback if file not found
+    return "Return valid JSON only."
+
+
 def _prompt_for_case(
-    case: dict[str, Any], schema: dict[str, Any], rag_context: str = ""
+    case: dict[str, Any],
+    schema: dict[str, Any],
+    rag_context: str = "",
+    prompt_template: str = "",
 ) -> str:
+    """Build prompt from template with case-specific variables."""
     canon_characters = case.get("canon_characters", [])
     canon_facts = case.get("canon_facts", [])
     allow_invention = bool(case.get("allow_invention", False))
-    required_top = schema.get("required", [])
 
-    schema_summary = f"required_top_level={json.dumps(required_top)}"
+    # Use provided template or load default
+    if not prompt_template:
+        prompt_template = _load_prompt_template()
 
+    # Build canon context section
+    canon_section = ""
+    if canon_characters or canon_facts:
+        canon_section = "Canon reference:\n"
+        if canon_characters:
+            canon_section += f"  Characters: {json.dumps(canon_characters)}\n"
+        if canon_facts:
+            canon_section += f"  Facts: {json.dumps(canon_facts)}\n"
+        canon_section += "\n"
+
+    # Build RAG context section
     rag_section = ""
     if rag_context.strip():
-        rag_section = f"Retrieved canon context:\n{rag_context}\n\n"
+        rag_section = f"Retrieved reference material:\n{rag_context}\n\n"
 
-    return (
-        "You are Phi, acting as Mind's encoder. "
-        "Return exactly one JSON object and nothing else.\n\n"
-        "Rules:\n"
-        "1) No markdown, no prose wrappers, no code fences.\n"
-        "2) Use all required fields from schema.\n"
-        "3) Missing unknown values must be null (never omit required keys).\n"
-        "4) Never invent characters or facts unless allow_invention=true.\n"
-        "5) Always fill in order: intent -> entities -> beats -> constraints -> style.\n"
-        "6) Ensure at least one entity and one beat when possible.\n"
-        "7) Put conflicts in beats[].conflict (use null if none).\n\n"
-        "Minimal valid shape:\n"
-        '{"intent":"...","entities":["..."],"beats":[{"id":"beat_1","goal":"...","conflict":null}],"constraints":{"never_invent":true},"style":{"tone":"..."}}\n\n'
-        f"allow_invention={str(allow_invention).lower()}\n"
-        f"canon_characters={json.dumps(canon_characters)}\n"
-        f"canon_facts={json.dumps(canon_facts)}\n\n"
-        f"{rag_section}"
-        f"Schema summary:\n{schema_summary}\n\n"
-        f"Input:\n{case.get('input', '')}\n"
+    # Fill placeholder variables in template
+    filled_template = (
+        prompt_template.replace("{ALLOW_INVENTION}", str(allow_invention).lower())
+        .replace("{CANON_CHARACTERS}", json.dumps(canon_characters))
+        .replace("{CANON_FACTS}", json.dumps(canon_facts))
     )
+
+    # Assemble full prompt
+    full_prompt = (
+        filled_template
+        + f"{canon_section}"
+        + f"{rag_section}"
+        + f"User input:\n{case.get('input', '')}\n"
+    )
+
+    return full_prompt
 
 
 def _run_phi(prompt: str, args: argparse.Namespace) -> tuple[str, list[str]]:
@@ -681,6 +706,11 @@ def main() -> None:
         default="",
         help="Optional custom command template with {prompt}",
     )
+    parser.add_argument(
+        "--prompt-file",
+        default="encoder/phi_prompt_v3.txt",
+        help="Path to prompt template file (replaces hardcoded prompt)",
+    )
 
     default_llama_bin = os.getenv("MIND_LLAMA_BIN", "")
     default_models_dir = os.getenv("MIND_MODELS_DIR", "")
@@ -703,6 +733,10 @@ def main() -> None:
 
     inputs_data = json.loads(inputs_path.read_text())
     schema_data = json.loads(schema_path.read_text())
+
+    # Load prompt template
+    prompt_template = _load_prompt_template(args.prompt_file)
+
     canon_chunks: list[tuple[str, str]] = []
     if not args.no_rag:
         canon_chunks = _load_canon_chunks(rag_canon_dir)
@@ -724,7 +758,9 @@ def main() -> None:
             max_chars=int(args.rag_max_chars),
             min_overlap=int(args.rag_min_overlap),
         )
-        prompt = _prompt_for_case(case, schema_data, rag_context=rag_context)
+        prompt = _prompt_for_case(
+            case, schema_data, rag_context=rag_context, prompt_template=prompt_template
+        )
         raw_output, invoke_notes = _run_phi(prompt, args)
         notes.extend(invoke_notes)
 
