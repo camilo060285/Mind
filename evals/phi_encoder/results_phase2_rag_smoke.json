@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-02-21T12:23:20.898866+00:00",
+  "model": "phi-local",
+  "inputs_file": "evals/phi_encoder/test_inputs/cases.json",
+  "schema_file": "evals/phi_encoder/schema.json",
+  "summary": {
+    "total_cases": 1,
+    "json_valid_rate": 1.0,
+    "schema_valid_rate": 1.0,
+    "null_policy_rate": 1.0,
+    "canon_consistency_rate": 1.0,
+    "conflict_extraction_rate": 0.0,
+    "invocation_timeout_rate": 0.0,
+    "invocation_error_rate": 0.0,
+    "prompt_echo_rate": 1.0,
+    "repair_success_rate": 0.0,
+    "total_hallucinated_characters": 0,
+    "total_forbidden_fact_hits": 0
+  },
+  "cases": [
+    {
+      "case_id": "c01_chaotic_pitch",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"host\",\"entities\":[\"ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"host\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nInput:\nok so ryxen maybe host? maybe villain?? keep neon cyan-magenta and \n\nOutput:\n{\"intent\":\"host\",\"entities\":[\"ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"host\",\"conflict\":null}],\"constraints\":{\"never_invent"
+    }
+  ]
+}

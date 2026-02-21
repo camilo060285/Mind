@@ -124,13 +124,179 @@ def _strip_prompt_echo(output: str, prompt: str) -> tuple[str, list[str]]:
     return stripped_output, notes
 
 
-def _prompt_for_case(case: dict[str, Any], schema: dict[str, Any]) -> str:
+def _tokenize_for_retrieval(text: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-zA-Z0-9_\-]{3,}", text.lower())
+        if token
+        not in {
+            "the",
+            "and",
+            "with",
+            "from",
+            "that",
+            "this",
+            "into",
+            "must",
+            "should",
+            "always",
+            "never",
+            "when",
+            "where",
+            "what",
+            "your",
+            "their",
+            "them",
+            "also",
+            "very",
+            "more",
+            "less",
+            "scene",
+            "style",
+            "tone",
+            "output",
+        }
+    }
+
+
+def _split_markdown_chunks(text: str) -> list[str]:
+    chunks: list[str] = []
+    current: list[str] = []
+
+    for line in text.splitlines():
+        if line.startswith("#") and current:
+            chunk = "\n".join(current).strip()
+            if chunk:
+                chunks.append(chunk)
+            current = [line]
+        else:
+            current.append(line)
+
+    tail = "\n".join(current).strip()
+    if tail:
+        chunks.append(tail)
+
+    if not chunks:
+        cleaned = text.strip()
+        return [cleaned] if cleaned else []
+
+    return chunks
+
+
+def _load_canon_chunks(canon_dir: Path) -> list[tuple[str, str]]:
+    if not canon_dir.exists() or not canon_dir.is_dir():
+        return []
+
+    chunks: list[tuple[str, str]] = []
+    for path in sorted(canon_dir.glob("*.md")):
+        if path.name.lower() == "readme.md":
+            continue
+        content = path.read_text(encoding="utf-8").strip()
+        if not content:
+            continue
+        for chunk in _split_markdown_chunks(content):
+            cleaned = chunk.strip()
+            if cleaned:
+                chunks.append((path.name, cleaned))
+
+    return chunks
+
+
+def _retrieve_canon_context(
+    case: dict[str, Any],
+    canon_chunks: list[tuple[str, str]],
+    top_k: int,
+    max_chars: int,
+    min_overlap: int,
+) -> str:
+    if not canon_chunks or top_k <= 0 or max_chars <= 0:
+        return ""
+
+    query_parts = [str(case.get("input", ""))]
+    query_parts.extend(
+        value for value in case.get("canon_characters", []) if isinstance(value, str)
+    )
+    query_parts.extend(
+        value for value in case.get("canon_facts", []) if isinstance(value, str)
+    )
+    query = "\n".join(query_parts)
+    query_tokens = _tokenize_for_retrieval(query)
+    if not query_tokens:
+        return ""
+
+    scored: list[tuple[int, str, str]] = []
+    for source_name, chunk in canon_chunks:
+        chunk_tokens = _tokenize_for_retrieval(chunk)
+        overlap = len(query_tokens.intersection(chunk_tokens))
+        if overlap < max(min_overlap, 1):
+            continue
+        bonus = 0
+        for name in case.get("canon_characters", []):
+            if isinstance(name, str) and name.strip() and name.lower() in chunk.lower():
+                bonus += 2
+        scored.append((overlap + bonus, source_name, chunk))
+
+    if not scored:
+        return ""
+
+    scored.sort(key=lambda item: item[0], reverse=True)
+    selected: list[str] = []
+    used_chars = 0
+
+    for _, source_name, chunk in scored[: max(top_k * 2, top_k)]:
+        compact_chunk = chunk
+        if len(compact_chunk) > 420:
+            compact_chunk = compact_chunk[:420].rstrip() + "..."
+        entry = f"[{source_name}]\n{compact_chunk}\n"
+        if used_chars + len(entry) > max_chars:
+            remaining = max_chars - used_chars
+            if remaining > 80:
+                entry = entry[:remaining]
+                selected.append(entry)
+            break
+        selected.append(entry)
+        used_chars += len(entry)
+        if len(selected) >= top_k:
+            break
+
+    return "\n".join(selected).strip()
+
+
+def _implied_conflict_from_input(case: dict[str, Any]) -> str | None:
+    raw_input = case.get("input")
+    if not isinstance(raw_input, str):
+        return None
+    lowered = raw_input.lower()
+    cues = [
+        "but",
+        "however",
+        "except",
+        "versus",
+        "vs",
+        "tension",
+        "conflict",
+        "contradiction",
+        "yet",
+        "although",
+    ]
+    if any(cue in lowered for cue in cues):
+        return "implied tension"
+    return None
+
+
+def _prompt_for_case(
+    case: dict[str, Any], schema: dict[str, Any], rag_context: str = ""
+) -> str:
     canon_characters = case.get("canon_characters", [])
     canon_facts = case.get("canon_facts", [])
     allow_invention = bool(case.get("allow_invention", False))
     required_top = schema.get("required", [])
 
     schema_summary = f"required_top_level={json.dumps(required_top)}"
+
+    rag_section = ""
+    if rag_context.strip():
+        rag_section = f"Retrieved canon context:\n{rag_context}\n\n"
 
     return (
         "You are Phi, acting as Mind's encoder. "
@@ -148,6 +314,7 @@ def _prompt_for_case(case: dict[str, Any], schema: dict[str, Any]) -> str:
         f"allow_invention={str(allow_invention).lower()}\n"
         f"canon_characters={json.dumps(canon_characters)}\n"
         f"canon_facts={json.dumps(canon_facts)}\n\n"
+        f"{rag_section}"
         f"Schema summary:\n{schema_summary}\n\n"
         f"Input:\n{case.get('input', '')}\n"
     )
@@ -482,6 +649,34 @@ def main() -> None:
     parser.add_argument("--temperature", type=float, default=0.3)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
+        "--rag-canon-dir",
+        default="rag/canon",
+        help="Path to markdown canon bibles used for retrieval context",
+    )
+    parser.add_argument(
+        "--rag-top-k",
+        type=int,
+        default=1,
+        help="How many retrieved canon snippets to inject into the prompt",
+    )
+    parser.add_argument(
+        "--rag-max-chars",
+        type=int,
+        default=300,
+        help="Maximum characters of retrieved canon context injected per prompt",
+    )
+    parser.add_argument(
+        "--rag-min-overlap",
+        type=int,
+        default=2,
+        help="Minimum token overlap required to include a canon snippet",
+    )
+    parser.add_argument(
+        "--no-rag",
+        action="store_true",
+        help="Disable retrieval context injection",
+    )
+    parser.add_argument(
         "--command-template",
         default="",
         help="Optional custom command template with {prompt}",
@@ -504,9 +699,13 @@ def main() -> None:
     schema_path = Path(args.schema)
     out_path = Path(args.out)
     diagnosis_path = Path(args.diagnosis)
+    rag_canon_dir = Path(args.rag_canon_dir)
 
     inputs_data = json.loads(inputs_path.read_text())
     schema_data = json.loads(schema_path.read_text())
+    canon_chunks: list[tuple[str, str]] = []
+    if not args.no_rag:
+        canon_chunks = _load_canon_chunks(rag_canon_dir)
 
     cases = inputs_data.get("cases", [])
     if args.max_cases and args.max_cases > 0:
@@ -518,7 +717,14 @@ def main() -> None:
         case_id = str(case.get("id", "unknown"))
         notes: list[str] = []
 
-        prompt = _prompt_for_case(case, schema_data)
+        rag_context = _retrieve_canon_context(
+            case,
+            canon_chunks,
+            top_k=int(args.rag_top_k),
+            max_chars=int(args.rag_max_chars),
+            min_overlap=int(args.rag_min_overlap),
+        )
+        prompt = _prompt_for_case(case, schema_data, rag_context=rag_context)
         raw_output, invoke_notes = _run_phi(prompt, args)
         notes.extend(invoke_notes)
 
@@ -558,6 +764,19 @@ def main() -> None:
                 payload, case
             )
             notes.extend(canon_notes)
+
+            implied_conflict = _implied_conflict_from_input(case)
+            if implied_conflict:
+                beats = payload.get("beats")
+                if isinstance(beats, list) and beats:
+                    first_beat = beats[0]
+                    if isinstance(first_beat, dict):
+                        conflict_value = first_beat.get("conflict")
+                        if not (
+                            isinstance(conflict_value, str) and conflict_value.strip()
+                        ):
+                            first_beat["conflict"] = implied_conflict
+                            notes.append("conflict_autofilled")
 
             has_conflict, conflict_notes = _check_conflict(payload)
             notes.extend(conflict_notes)

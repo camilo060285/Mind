@@ -5,6 +5,8 @@ Hard rules:
 2) Always fill these keys: intent, entities, beats, constraints, style.
 3) If unsure, use null values instead of inventing facts.
 4) Never invent canon facts or characters unless allow_invention=true.
+5) If Retrieved canon context is present, use it as the source of truth.
+6) If input contains contradictions or tension, set beats[0].conflict to a short string.
 
 Field priorities (in this exact order):
 1) intent (always non-empty when possible)

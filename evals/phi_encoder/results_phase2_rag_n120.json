@@ -1,0 +1,338 @@
+{
+  "generated_at": "2026-02-21T13:40:38.449488+00:00",
+  "model": "phi-local",
+  "inputs_file": "evals/phi_encoder/test_inputs/cases.json",
+  "schema_file": "evals/phi_encoder/schema.json",
+  "summary": {
+    "total_cases": 20,
+    "json_valid_rate": 0.8,
+    "schema_valid_rate": 0.75,
+    "null_policy_rate": 0.75,
+    "canon_consistency_rate": 0.4,
+    "conflict_extraction_rate": 0.0,
+    "invocation_timeout_rate": 0.15,
+    "invocation_error_rate": 0.0,
+    "prompt_echo_rate": 0.95,
+    "repair_success_rate": 0.0,
+    "total_hallucinated_characters": 8,
+    "total_forbidden_fact_hits": 0
+  },
+  "cases": [
+    {
+      "case_id": "c01_chaotic_pitch",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"host\", \"entities\":[\"ryxen\"], \"beats\":[{\"id\":\"beat_1\",\"goal\":\"host\", \"conflict\":null}],\"constraints\":{\"never_invent\":true,\"never_invent_in_beats\":true,\"never_invent_in_style\":true},\"style\":{\"tone\":\"...\"}}\n\n\"\"\"\n\nimport json\nimport re\nimport os\nimport random\nimport sys\nimport argparse\n\nfrom pathlib import Path\nfrom typing import Dict, List, Optional,"
+    },
+    {
+      "case_id": "c02_contradictory_character",
+      "json_valid": true,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "missing_top:style",
+        "required_key_missing:style",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true,\"panic_allowed\":true}},\"style\":{\"tone\":\"...\"}\n\nInput:\nSarah Nova is calm anchor, except she's hyper-chaotic today; keep continuity unless market crashes 20% then panic tone allowed\n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict"
+    },
+    {
+      "case_id": "c03_vague_goal",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\"\"\"\n\nfrom typing import List, Dict, Optional\nfrom json import loads, dumps\nfrom datetime import datetime\nfrom random import choice\n\nfrom . import config\nfrom . import util\nfrom . import schema\n\ndef make_json(\n    intent: str, \n    entities: List[str"
+    },
+    {
+      "case_id": "c04_mixed_language",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "invocation_timeout:120s",
+        "invalid_json"
+      ],
+      "output_preview": ""
+    },
+    {
+      "case_id": "c05_incomplete_thought",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "prompt_echo_trimmed",
+        "repair_failed",
+        "invalid_json"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\"...\",\""
+    },
+    {
+      "case_id": "c06_confusing_prompt",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "invocation_timeout:120s",
+        "repair_failed",
+        "invalid_json"
+      ],
+      "output_preview": "\"\"\"\n\nimport json\nimport random\nimport re\nimport string\nimport xml.etree.ElementTree as ET\n\nfrom . import common\nfrom . import common_schema\nfrom . import common_schema_entity\nfrom . import common_schema_beat\nfrom . import common_schema_constraint\nfrom . import common_schema_style\nfrom . import common_schema_intent\n\n# TODO:\n# - Add more entity types\n# - Add more constraints\n# - Add more styles\n# -"
+    },
+    {
+      "case_id": "c07_multi_entity_noise",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"Ryxen\", \"Sarah Nova\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nInput:\nRyxen  + Sarah Nova  + maybe Tesla CEO cameo? no new characters unless already canon\n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"Ryxen\", \"Sarah Nova\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":"
+    },
+    {
+      "case_id": "c08_rule_heavy",
+      "json_valid": false,
+      "schema_valid": false,
+      "null_policy_ok": false,
+      "canon_consistent": false,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "invocation_timeout:120s",
+        "repair_failed",
+        "invalid_json"
+      ],
+      "output_preview": "Output:\nJSON object with all required fields filled in\n\n\"\"\"\n\n# import json\n# import random\n# import string\n\n# def generate_json(allow_invention=False, canon_characters=None, canon_facts=None, compliance_tension=None, no_legal_claims=None, audience_internal_studio=None, output_length=None):\n\n# \t# TODO:\n# \t# 1) generate a random intent\n# \t# 2) generate a random set of entities"
+    },
+    {
+      "case_id": "c09_ambiguous_actor",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\n'''\n\nimport json\n\ndef encode(canon_characters, canon_facts, allow_invention=False, **kwargs):\n    '''\n    Encode the given parameters into a JSON object.\n\n    Parameters:\n    - canon_characters: list of characters to use as canonical."
+    },
+    {
+      "case_id": "c10_conflict_required",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nAllow_invention=true\ncanon_characters=[\"Ryxen\"]\ncanon_facts=[]\n\nInput:\nNeed a market surge scene where optimism and risk controls clash\n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conf"
+    },
+    {
+      "case_id": "c11_naming_normalization",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"Ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nInput:\nryxen, RYXEN, Ryxen?? unify pls and keep one entity\n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"Ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\""
+    },
+    {
+      "case_id": "c12_forbidden_detail",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\n\"\"\"\n\nimport json\nimport random\nimport re\n\nfrom . import schema\nfrom . import util\n\ndef _get_random_character(characters):\n    \"\"\"\n    Return a random character from the list of characters.\n\n    Args:\n        characters (list): List of characters to choose from."
+    },
+    {
+      "case_id": "c13_sparse_input",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"Ryxen. crash. recovery. irony.\",\"entities\":[\"Ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"recovery\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"ironic\"}}\n\nInput:\nRyxen. crash. recovery.\n\nOutput:\n{\"intent\":\"Ryxen. crash. recovery.\",\"entities\":[\"Ryxen\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"recovery\",\"conflict\":"
+    },
+    {
+      "case_id": "c14_goal_without_entities",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"keep_neutral_tone\",\"entities\":[\"volatile_close\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"neutral\"}}\n\n\"\"\"\n\nimport json\nimport re\n\ndef main():\n    # Parse input\n    text = \"Need structured brief for internal agents about volatile close, keep neutral tone\"\n    text = text.lower()\n    text = re.sub(r'[^\\"
+    },
+    {
+      "case_id": "c15_intent_drift_trap",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\n\"\"\"\n\nimport json\nimport random\n\nfrom . import schema\nfrom . import util\n\ndef encode(text, allow_invention=False, canon_characters=None, canon_facts=None, **kwargs):\n    \"\"\"\n    Encode a text into a JSON object.\n\n    Args:"
+    },
+    {
+      "case_id": "c16_non_english_fragment",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\n\"\"\"\n\nimport json\nimport re\n\nfrom . import schema\n\ndef process_line(line):\n    \"\"\"\n    Process a line of text.\n    \"\"\"\n    line = line.strip()\n    if line.startswith('#'):\n        return None\n    if line.startsw"
+    },
+    {
+      "case_id": "c17_null_policy",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true,\"allow_invention\":false,\"canon_characters\":[],\"canon_facts\":[]},\"style\":{\"tone\":\"...\"}}\n\nSolution:\n\n```python\ndef encode(intent, entities, beats, constraints, style):\n    # Fill in order: intent -> entities -> beats -> constraints -> style\n    # Ensure at least one entity and one"
+    },
+    {
+      "case_id": "c18_continuity_break_trap",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"Sarah Nova\",\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"anchor\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nInput:\nKeep Sarah Nova as anchor; don'r suddenly make her a field reporter in this beat\n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"Sarah Nova\",\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"anchor\",\"conflict\":null}],\"constraints\":{\"never"
+    },
+    {
+      "case_id": "c19_conflicting_constraints",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": true,
+      "hallucinated_characters": 0,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true,\"tension\":null},\"style\":{\"tone\":\"...\"}}\n\n\"\"\"\n\nimport json\n\ndef encode(markdown, allow_invention=False, canon_characters=None, canon_facts=None):\n    \"\"\"\n    Encode markdown into JSON.\n\n    Args:\n        markdown (str): Markdown to encode."
+    },
+    {
+      "case_id": "c20_noise_and_typos",
+      "json_valid": true,
+      "schema_valid": true,
+      "null_policy_ok": true,
+      "canon_consistent": false,
+      "hallucinated_characters": 1,
+      "forbidden_fact_hits": 0,
+      "has_conflict": false,
+      "notes": [
+        "prompt_echo_trimmed",
+        "hallucinated_characters:['...']",
+        "no_conflict_extracted"
+      ],
+      "output_preview": "Output:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\"style\":{\"tone\":\"...\"}}\n\nInput:\nplz encod this -> ryxen mkt suge lol but serious quality gates \n\nOutput:\n{\"intent\":\"...\",\"entities\":[\"...\"],\"beats\":[{\"id\":\"beat_1\",\"goal\":\"...\",\"conflict\":null}],\"constraints\":{\"never_invent\":true},\""
+    }
+  ]
+}

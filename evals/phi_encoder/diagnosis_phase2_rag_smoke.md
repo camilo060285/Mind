@@ -1,18 +1,16 @@
 # Phi Encoder Diagnosis
 
 ## Baseline
-- Cases: 20
-- JSON validity: 0.0%
-- Schema compliance: 0.0%
-- Canon consistency: 0.0%
+- Cases: 1
+- JSON validity: 100.0%
+- Schema compliance: 100.0%
+- Canon consistency: 100.0%
 - Conflict extraction: 0.0%
 - Hallucinated character count: 0
 - Invocation timeout rate: 0.0%
 - Invocation error rate: 0.0%
 
 ## Failure Pattern
-- Primary issue: JSON/schema reliability -> tighten prompt + add strict repair layer.
-- Primary issue: canon drift/hallucination -> add RAG with canon + schema snippets.
 - Primary issue: weak abstraction/conflict extraction -> consider curated fine-tuning set.
 - Cloud integration is premature; keep local-only until thresholds are met.
 
